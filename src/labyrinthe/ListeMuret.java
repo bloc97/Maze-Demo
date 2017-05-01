@@ -15,6 +15,8 @@ import java.util.Iterator;
 public class ListeMuret implements Iterable<Muret> {
     private NoeudMuret first;
     
+    public ListeMuret() {
+    }
     public ListeMuret(NoeudMuret first) {
         this.first = first;
     }

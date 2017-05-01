@@ -14,19 +14,53 @@ public class Labyrinthe {
     Personnage pers;
     ListeMuret murs;
     Muret sortie;
-    public Labyrinthe(int l, int h, float density, long delayms, byte lives) {
+    public Labyrinthe(int l, int h, float density, long delayms, int lives) {
         this.l = l;
         this.h = h;
-        murs = generateWalls(density);
+        murs = generateWalls(l, h, density);
         int[] pos = generatePositions(murs);
         pers = new Personnage(pos[0], pos[1], lives);
         sortie = new Muret(pos[2], pos[3], pos[4] == 1);
     }
-    public static ListeMuret generateWalls(float density) {
-        return new ListeMuret(null);
+    public static ListeMuret generateWalls(int l, int h, float density) {
+        ListeMuret liste = new ListeMuret();
+        
+        
+        for (int x=0; x<l; x++) { //Murets horizontaux
+            for (int y=0; y<=h; y++) {
+                if (y == 0 || y == h) {
+                    liste.push(new Muret(x, y, true));
+                } else {
+                    if (Math.random() < density) {
+                        liste.push(new Muret(x, y, true));
+                    }
+                }
+            }
+        }
+        
+        for (int x=0; x<=l; x++) { //Murets verticaux
+            for (int y=0; y<h; y++) {
+                if (x == 0 || x == h) {
+                    liste.push(new Muret(x, y, false));
+                } else {
+                    if (Math.random() < density) {
+                        liste.push(new Muret(x, y, false));
+                    }
+                }
+            }
+        }
+        
+        
+        return liste;
     }
     public static int[] generatePositions(ListeMuret murs) {
         return new int[] {0,0,0,0,0};
+    }
+    public int l() {
+        return l;
+    }
+    public int h() {
+        return h;
     }
     public boolean canDeplace(char direction) {
         switch(direction) {

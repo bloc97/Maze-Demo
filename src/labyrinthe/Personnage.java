@@ -13,9 +13,9 @@ import java.awt.Graphics;
  */
 public class Personnage {
     private int x,y;
-    private byte vies;
+    private int vies;
     
-    public Personnage(int x, int y, byte vies) {
+    public Personnage(int x, int y, int vies) {
         this.x = x;
         this.y = y;
         this.vies = vies;
