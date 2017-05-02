@@ -86,178 +86,64 @@ public class AIFloodFill implements AI {
         }
     }
     
-    public boolean canMoveTop(int x, int y, int w, int h, ListeMuret murs) {
-        if (y-1 < 0) {
-            return false;
-        }
-        return murs.chercheMuret(x, y, true) != null;
-    }
-    public boolean canMoveRight(int x, int y, int w, int h, ListeMuret murs) {
-        if (x+1 >= w) {
-            return false;
-        }
-        return murs.chercheMuret(x+1, y, false) != null;
-    }
-    public boolean canMoveBottom(int x, int y, int w, int h, ListeMuret murs) {
-        if (y+1 >= h) {
-            return false;
-        }
-        return murs.chercheMuret(x, y+1, true) != null;
-    }
-    public boolean canMoveLeft(int x, int y, int w, int h, ListeMuret murs) {
-        if (x-1 < 0) {
-            return false;
-        }
-        return murs.chercheMuret(x, y, false) != null;
-    }
-
 
     @Override
     public char getNextDirection(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage) {
-        boolean canMoveTop = canDeplace(x, y, 'N', murs);
-        boolean canMoveRight = canDeplace(x, y, 'E', murs);
-        boolean canMoveBottom = canDeplace(x, y, 'S', murs);
-        boolean canMoveLeft = canDeplace(x, y, 'W', murs);
-        
-        System.out.println(canMoveTop + " " + canMoveRight + " " + canMoveBottom + " " + canMoveLeft);
-        System.out.println(canMove(0, x, y, w, h, murs) + " " + canMove(1, x, y, w, h, murs) + " " + canMove(2, x, y, w, h, murs) + " " + canMove(3, x, y, w, h, murs));
+        //System.out.println(canMoveTop + " " + canMoveRight + " " + canMoveBottom + " " + canMoveLeft);
+        //System.out.println(canMove(0, x, y, w, h, murs) + " " + canMove(1, x, y, w, h, murs) + " " + canMove(2, x, y, w, h, murs) + " " + canMove(3, x, y, w, h, murs));
         
         int exitX = (sortie.isHorz) ? sortie.x : sortie.x-1;
         int exitY = (sortie.isHorz) ? sortie.y-1 : sortie.y;
         
-        boolean foundDirection = false;
         
         if (!canMove(direction, x, y, w, h, murs)) {
+            boolean canTurnLeft = false, canTurnRight = false;
+            
             if (canMove(direction+1, x, y, w, h, murs) && getFloodFillRelative(x, y, direction+1, w, h, murs)[exitX][exitY]) {
-                direction = (direction+1)%4;
-            } else if (canMove(direction-1, x, y, w, h, murs) && getFloodFillRelative(x, y, direction-1, w, h, murs)[exitX][exitY]) {
+                canTurnRight = true;
+            }
+            if (canMove(direction-1, x, y, w, h, murs) && getFloodFillRelative(x, y, direction-1, w, h, murs)[exitX][exitY]) {
+                canTurnLeft = true;
+            }
+            
+            if (canTurnLeft && canTurnRight) {
+                //direction = (Math.random() < 0.5) ? (direction+1)%4 : (direction-1)%4;
+                direction = ((direction+1)%4 == 1 || (direction+1)%4 == 2) ? (direction+1)%4 : (direction-1)%4;
+            } else if (canTurnLeft) {
                 direction = (direction-1)%4;
+            } else if (canTurnRight) {
+                direction = (direction+1)%4;
             } else if (canMove(direction+2, x, y, w, h, murs)) {
                 direction = (direction+2)%4;
             }
-            foundDirection = true;
+            return directionToChar(direction);
         }
         
-        if (!foundDirection && canMove(direction+1, x, y, w, h, murs) && getCorner(direction, direction+1, x, y, w, h, murs) && getFloodFillRelative(x, y, direction+1, w, h, murs)[exitX][exitY]) {
-            direction = (direction+1)%4;
-            foundDirection = true;
+        boolean canTurnLeftCorner = false, canTurnRightCorner = false;
+        if (canMove(direction+1, x, y, w, h, murs) && getCorner(direction, direction+1, x, y, w, h, murs) && getFloodFillRelative(x, y, direction+1, w, h, murs)[exitX][exitY]) {
+            canTurnRightCorner = true;
         }
         
-        if (!foundDirection && canMove(direction-1, x, y, w, h, murs) && getCorner(direction, direction-1, x, y, w, h, murs) && getFloodFillRelative(x, y, direction-1, w, h, murs)[exitX][exitY]) {
-            direction = (direction-1)%4;
-            foundDirection = true;
+        if (canMove(direction-1, x, y, w, h, murs) && getCorner(direction, direction-1, x, y, w, h, murs) && getFloodFillRelative(x, y, direction-1, w, h, murs)[exitX][exitY]) {
+            canTurnLeftCorner = true;
         }
-        /*
-        switch(direction) {
-            case 0:
-                if (!canMoveTop) {
-                    if (canMoveRight && Helper.getFloodFillRelative(x, y, 1, w, h, murs)[exitX][exitY]) {
-                        direction = 1; //Right
-                    } else if (canMoveLeft && Helper.getFloodFillRelative(x, y, 3, w, h, murs)[exitX][exitY]) {
-                        direction = 3; //Left
-                    } else if (canMoveBottom) {
-                        direction = 2; //Bottom;
-                    }
-                    break;
-                }
-
-                if (canMoveRight && topRight(x, y, w, h, murs)) {
-                    if (Helper.getFloodFillRelative(x, y, 1, w, h, murs)[exitX][exitY]) {
-                        direction = 1; //Right
-                        break;
-                    }
-                }
-
-                if (canMoveLeft && topLeft(x, y, w, h, murs)) {
-                    if (Helper.getFloodFillRelative(x, y, 3, w, h, murs)[exitX][exitY]) {
-                        direction = 3; //Right
-                        break;
-                    }
-                }
-                
-                break;
-            case 1:
-                if (!canMoveRight) {
-                    if (canMoveBottom && Helper.getFloodFillRelative(x, y, 2, w, h, murs)[exitX][exitY]) {
-                        direction = 2; 
-                    } else if (canMoveTop && Helper.getFloodFillRelative(x, y, 0, w, h, murs)[exitX][exitY]) {
-                        direction = 0;
-                    } else if (canMoveLeft) {
-                        direction = 3;
-                    }
-                    break;
-                }
-
-                if (canMoveBottom && bottomRight(x, y, w, h, murs)) {
-                    if (Helper.getFloodFillRelative(x, y, 2, w, h, murs)[exitX][exitY]) {
-                        direction = 2;
-                        break;
-                    }
-                }
-
-                if (canMoveTop && topRight(x, y, w, h, murs)) {
-                    if (Helper.getFloodFillRelative(x, y, 0, w, h, murs)[exitX][exitY]) {
-                        direction = 0;
-                        break;
-                    }
-                }
-                break;
-            case 2:
-                if (!canMoveBottom) {
-                    if (canMoveRight && Helper.getFloodFillRelative(x, y, 1, w, h, murs)[exitX][exitY]) {
-                        direction = 1; 
-                    } else if (canMoveLeft && Helper.getFloodFillRelative(x, y, 3, w, h, murs)[exitX][exitY]) {
-                        direction = 3;
-                    } else if (canMoveTop) {
-                        direction = 0;
-                    }
-                    break;
-                }
-
-                if (canMoveRight && bottomRight(x, y, w, h, murs)) {
-                    if (Helper.getFloodFillRelative(x, y, 1, w, h, murs)[exitX][exitY]) {
-                        direction = 1;
-                        break;
-                    }
-                }
-
-                if (canMoveLeft && bottomLeft(x, y, w, h, murs)) {
-                    if (Helper.getFloodFillRelative(x, y, 3, w, h, murs)[exitX][exitY]) {
-                        direction = 3;
-                        break;
-                    }
-                }
-                break;
-            case 3:
-                if (!canMoveLeft) {
-                    if (canMoveBottom && Helper.getFloodFillRelative(x, y, 2, w, h, murs)[exitX][exitY]) {
-                        direction = 2; 
-                    } else if (canMoveTop && Helper.getFloodFillRelative(x, y, 0, w, h, murs)[exitX][exitY]) {
-                        direction = 0;
-                    } else if (canMoveRight) {
-                        direction = 1;
-                    }
-                    break;
-                }
-
-                if (canMoveBottom && bottomLeft(x, y, w, h, murs)) {
-                    if (Helper.getFloodFillRelative(x, y, 2, w, h, murs)[exitX][exitY]) {
-                        direction = 2;
-                        break;
-                    }
-                }
-
-                if (canMoveTop && topLeft(x, y, w, h, murs)) {
-                    if (Helper.getFloodFillRelative(x, y, 0, w, h, murs)[exitX][exitY]) {
-                        direction = 0;
-                        break;
-                    }
-                }
-                break;
-            default:
-                throw new IllegalStateException("Illegal AI Direction State.");
-        }*/
-        System.out.println(direction);
+        
+        if (canTurnLeftCorner && canTurnRightCorner) {
+            direction = ((direction+1)%4 == 1 || (direction+1)%4 == 2) ? (direction+1)%4 : (direction-1)%4;
+        } else if (canTurnLeftCorner) {
+            if (getFloodFillRelative(x, y, direction, w, h, murs)[exitX][exitY]) {
+                direction = ((direction-1)%4 == 1 || (direction-1)%4 == 2) ? (direction-1)%4 : direction;
+            } else {
+                direction = (direction-1)%4;
+            }
+        } else if (canTurnRightCorner) {
+            if (getFloodFillRelative(x, y, direction, w, h, murs)[exitX][exitY]) {
+                direction = ((direction+1)%4 == 1 || (direction+1)%4 == 2) ? (direction+1)%4 : direction;
+            } else {
+                direction = (direction+1)%4;
+            }
+        }
+        //System.out.println(direction);
         return directionToChar(direction);
         
     }

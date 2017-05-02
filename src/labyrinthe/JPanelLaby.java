@@ -91,7 +91,7 @@ public class JPanelLaby extends JPanel {
                         affichageLaby.labyrinthe().stepAI(affichageLaby);
                         break;
                 }
-                System.out.println(e.getKeyChar());
+                //System.out.println(e.getKeyChar());
                 repaint();
             }
 
