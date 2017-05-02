@@ -32,7 +32,7 @@ public class Muret {
     public boolean equals(Object obj) {
         if (obj instanceof Muret) {
             Muret mur = (Muret)obj;
-            if (mur.x == x && mur.y == y) {
+            if (mur.x == x && mur.y == y && mur.isHorz == isHorz) {
                 return true;
             }
         }

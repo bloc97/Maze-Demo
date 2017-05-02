@@ -21,6 +21,7 @@ public class AffichageLaby extends JComponent {
     private int w, h;
     public void setLabyrinthe(Labyrinthe labyrinthe) {
         laby = labyrinthe;
+        repaint();
     }
     public void setCustomSize(int w, int h) {
         this.w = w;
@@ -40,9 +41,15 @@ public class AffichageLaby extends JComponent {
         
     };
     protected void onPaint(Graphics2D g2) {
-        int sqSize = Math.min(w/(laby.l()+2), h/laby.h());
-        for (Muret muret : laby.murs) {
-            if (muret.visible()) {
+        if (laby == null) {
+            return;
+        }
+        if (laby.murs() == null) {
+            return;
+        }
+        int sqSize = Math.min(w/(laby.w()+2), h/(laby.h()+2));
+        for (Muret muret : laby.murs()) {
+            if (muret.visible() && !muret.equals(laby.sortie())) {
                 int x0, y0, x1, y1;
                 x0 = muret.x*sqSize;
                 y0 = muret.y*sqSize;
@@ -56,6 +63,8 @@ public class AffichageLaby extends JComponent {
                 g2.drawLine(x0, y0, x1, y1);
             }
         }
+        Personnage pers = laby.personnage();
+        g2.fillOval(pers.x()*sqSize, pers.y()*sqSize, sqSize, sqSize);
     };
     protected void postPaint() {
         

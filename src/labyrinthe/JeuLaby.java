@@ -20,7 +20,7 @@ public class JeuLaby {
         JPanelLaby panel = new JPanelLaby(800, 600);
         frame.add(panel);
         
-        Labyrinthe laby = new Labyrinthe(30, 30, 0.1f, 1000l, 5);
+        Labyrinthe laby = new Labyrinthe(100, 100, 0.7f, 1000l, 5);
         panel.setLabyrinthe(laby);
         
     }
