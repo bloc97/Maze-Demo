@@ -5,6 +5,9 @@
  */
 package labyrinthe;
 
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+
 /**
  *
  * @author bowen
@@ -16,12 +19,22 @@ public class JeuLaby {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        JFrameLaby frame = new JFrameLaby(800, 600);
-        JPanelLaby panel = new JPanelLaby(800, 600);
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        /*DisplayMode[] dms = gd.getDisplayModes();
+        for (DisplayMode mode : dms) {
+            System.out.println(mode.getWidth() + " x " + mode.getHeight() + " " + mode.getBitDepth() + "b @" + mode.getRefreshRate());
+        }*/
+        int width = gd.getDisplayMode().getWidth();
+        int height = gd.getDisplayMode().getHeight();
+        int defaultW = width*9/10;
+        int defaultH = height*9/10;
+        JFrameLaby frame = new JFrameLaby(defaultW, defaultH);
+        JPanelLaby panel = new JPanelLaby(defaultW, defaultH);
         frame.add(panel);
+        panel.setFocusable(true);
+        //panel.launch();
         
-        Labyrinthe laby = new Labyrinthe(100, 100, 0.7f, 1000l, 5);
-        panel.setLabyrinthe(laby);
+        panel.generateNewMaze(30, 30, 1f, 1000l, 5, 2);
         
     }
     
