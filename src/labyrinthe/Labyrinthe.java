@@ -20,7 +20,7 @@ public class Labyrinthe {
     private final float density;
     private final int initialLives;
     
-    private AI ai = new AIFloodFill();
+    private AI ai = new AIGreedyFloodFill();
     
     private int winX, winY;
     
@@ -35,8 +35,8 @@ public class Labyrinthe {
         System.out.println("Initialising Maze...");
         murs = new ListeMuret();
         //RandomGenerators.uniformGenerateWalls(l, h, density, murs, affichage, seconds);
-        RandomGenerators.recursiveGenerateWalls(l, h, density, murs, affichage, seconds);
-        int[] pos = RandomGenerators.recursiveGeneratePossiblePositions(l, h, murs);
+        RandomGenerators.depthFirstGenerateWalls(l, h, density, murs, affichage, seconds);
+        int[] pos = RandomGenerators.connectedMazeGeneratePossiblePositions(l, h, murs);
         System.out.println("Starting Maze.");
         pers = new Personnage(pos[0], pos[1], initialLives);
         sortie = new Muret(pos[2], pos[3], pos[4] == 1);
@@ -48,9 +48,14 @@ public class Labyrinthe {
     }
     
     public void stepAI(JComponent affichage) {
+        if (sortie == null) {
+            return;
+        }
         char dir = ai.getNextDirection(pers.x(), pers.y(), l, h, murs, sortie, affichage);
         
         if (pers.x() == winX && pers.y() == winY) {
+            this.generate(affichage, 0);
+            ai = new AIGreedyFloodFill();
             return;
         }
         
@@ -59,11 +64,15 @@ public class Labyrinthe {
         }
     }
     
+    
     public int w() {
         return l;
     }
     public int h() {
         return h;
+    }
+    public AI ai() {
+        return ai;
     }
     public Personnage personnage() {
         return pers;
@@ -100,6 +109,11 @@ public class Labyrinthe {
         return true;
     }
     public boolean deplace(char direction) {
+        
+        if (pers.x() == winX && pers.y() == winY) {
+            //WIN!
+        }
+        
         if (canDeplace(direction)) {
         switch(direction) {
             case 'H':

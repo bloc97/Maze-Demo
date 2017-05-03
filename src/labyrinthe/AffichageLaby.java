@@ -40,6 +40,7 @@ public class AffichageLaby extends JComponent {
         setPreferredSize(new Dimension(w, h));
     }
     
+    
     @Override
     protected void paintComponent(Graphics g) {
         prePaint();
@@ -120,6 +121,11 @@ public class AffichageLaby extends JComponent {
             }
         }
         
+        if (laby.ai() == null) {
+            return;
+        }
+        laby.ai().paint(g2, sqSize);
+        
         if (laby.personnage() == null || laby.sortie() == null) {
             return;
         }
@@ -127,6 +133,7 @@ public class AffichageLaby extends JComponent {
         laby.personnage().dessine(g2, sqSize);
         g2.setColor(Color.yellow);
         g2.drawString("Vies: " + laby.personnage().vies(), 20, 20);
+        
         
         
     };

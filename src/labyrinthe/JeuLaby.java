@@ -34,8 +34,10 @@ public class JeuLaby {
         panel.setFocusable(true);
         //panel.launch();
         
-        panel.generateNewMaze(30, 30, 0.2f, 1000l, 5, 2);
+        panel.generateNewMaze(20, 20, 0.2f, 1000l, 5, 2);
+        
         
     }
+    
     
 }

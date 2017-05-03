@@ -5,6 +5,7 @@
  */
 package labyrinthe;
 
+import java.awt.Graphics2D;
 import javax.swing.JComponent;
 
 /**
@@ -13,4 +14,5 @@ import javax.swing.JComponent;
  */
 public interface AI {
     public char getNextDirection(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage);
+    public void paint(Graphics2D g2, double sqSize);
 }

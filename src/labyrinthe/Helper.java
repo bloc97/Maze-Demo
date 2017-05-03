@@ -5,6 +5,11 @@
  */
 package labyrinthe;
 
+import java.awt.Point;
+import java.awt.Polygon;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+
 /**
  *
  * @author bowen
@@ -100,6 +105,103 @@ public abstract class Helper {
             default:
                 return directionToChar((direction+4)%4);
         }
+    }
+    public static Shape createArrow(Point p0, Point p1) {
+        Polygon arrow = new Polygon();
+        arrow.addPoint(-6,1);
+        arrow.addPoint(3,1);
+        arrow.addPoint(3,3);
+        arrow.addPoint(6,0);
+        arrow.addPoint(3,-3);
+        arrow.addPoint(3,-1);
+        arrow.addPoint(-6,-1);
+
+
+        Point midPoint = new Point((int)((p0.x + p1.x)/2.0), (int)((p0.y + p1.y)/2.0));
+
+        double rotate = Math.atan2(p1.y - p0.y, p1.x - p0.x);
+
+        AffineTransform transform = new AffineTransform();
+        transform.translate(midPoint.x, midPoint.y);
+        double ptDistance = p0.distance(p1);
+        double scale = ptDistance / 12.0;
+        transform.scale(scale, scale);
+        transform.rotate(rotate);
+
+        return transform.createTransformedShape(arrow);
+    }
+
+    public static Muret getMuretFromDirection(int x, int y, int d) {
+        switch (d) {
+            case 0:
+                return new Muret(x, y, true);
+            case 1:
+                return new Muret(x + 1, y, false);
+            case 2:
+                return new Muret(x, y + 1, true);
+            case 3:
+                return new Muret(x, y, false);
+            default:
+                return getMuretFromDirection(x, y, (d + 4) % 4);
+        }
+    }
+
+    public static Point getPointFromDirection(int x, int y, int d) {
+        switch (d) {
+            case 0:
+                return new Point(x, y - 1);
+            case 1:
+                return new Point(x + 1, y);
+            case 2:
+                return new Point(x, y + 1);
+            case 3:
+                return new Point(x - 1, y);
+            default:
+                return getPointFromDirection(x, y, (d + 4) % 4);
+        }
+    }
+
+    public static boolean isVisited(int x, int y, int d, boolean[][] visited) {
+        switch (d) {
+            case 0:
+                return isVisited(x, y - 1, visited);
+            case 1:
+                return isVisited(x + 1, y, visited);
+            case 2:
+                return isVisited(x, y + 1, visited);
+            case 3:
+                return isVisited(x - 1, y, visited);
+            default:
+                return isVisited(x, y, (d + 4) % 4, visited);
+        }
+    }
+
+    public static boolean isVisited(int x, int y, boolean[][] visited) {
+        if (x < 0 || y < 0 || x >= visited.length || y >= visited[0].length) {
+            return true;
+        }
+        return visited[x][y];
+    }
+    
+    public static boolean hasUnvisited(boolean[][] visited) {
+        for (int x=0; x<visited.length; x++) {
+            for (int y=0; y<visited[0].length; y++) {
+                if (!visited[x][y]) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    public static boolean isBorderMuret(Muret muret, int w, int h) {
+        if ((muret.x == 0 || muret.x == w) && !muret.isHorz) {
+            return true;
+        }
+        if ((muret.y == 0 || muret.y == h) && muret.isHorz) {
+            return true;
+        }
+        return false;
     }
     
 }

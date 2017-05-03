@@ -35,6 +35,7 @@ public class ListeMuret implements Iterable<Muret> {
                 currentNoeud.setNext(currentNoeud.next().next());
                 return true;
             }
+            currentNoeud = currentNoeud.next();
         }
         return false;
     }
@@ -69,6 +70,20 @@ public class ListeMuret implements Iterable<Muret> {
     }
     public Muret chercheMuret(int x, int y, boolean isHorz) {
         return chercheMuret(new Muret(x, y, isHorz));
+    }
+    public Muret chercheMuret(int x, int y, int direction) {
+        switch(direction) {
+            case 0:
+                return chercheMuret(x, y, true);
+            case 2:
+                return chercheMuret(x, y+1, true);
+            case 3:
+                return chercheMuret(x, y, false);
+            case 1:
+                return chercheMuret(x+1, y, false);
+            default :
+                return chercheMuret(x, y, (direction+4)%4);
+        }
     }
     public Muret chercheMuret(int x, int y, char cardinalDirection) {
         switch(cardinalDirection) {

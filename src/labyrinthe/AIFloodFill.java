@@ -5,6 +5,7 @@
  */
 package labyrinthe;
 
+import java.awt.Graphics2D;
 import javax.swing.JComponent;
 import static labyrinthe.Helper.canDeplace;
 import static labyrinthe.Helper.directionToChar;
@@ -107,8 +108,8 @@ public class AIFloodFill implements AI {
             }
             
             if (canTurnLeft && canTurnRight) {
-                //direction = (Math.random() < 0.5) ? (direction+1)%4 : (direction-1)%4;
-                direction = ((direction+1)%4 == 1 || (direction+1)%4 == 2) ? (direction+1)%4 : (direction-1)%4;
+                direction = (Math.random() < 0.5) ? (direction+1)%4 : (direction-1)%4;
+                //direction = ((direction+1)%4 == 1 || (direction+1)%4 == 2) ? (direction+1)%4 : (direction-1)%4;
             } else if (canTurnLeft) {
                 direction = (direction-1)%4;
             } else if (canTurnRight) {
@@ -129,16 +130,19 @@ public class AIFloodFill implements AI {
         }
         
         if (canTurnLeftCorner && canTurnRightCorner) {
-            direction = ((direction+1)%4 == 1 || (direction+1)%4 == 2) ? (direction+1)%4 : (direction-1)%4;
+            direction = (Math.random() < 0.5) ? (direction+1)%4 : (direction-1)%4;
+            //direction = ((direction+1)%4 == 1 || (direction+1)%4 == 2) ? (direction+1)%4 : (direction-1)%4;
         } else if (canTurnLeftCorner) {
             if (getFloodFillRelative(x, y, direction, w, h, murs)[exitX][exitY]) {
-                direction = ((direction-1)%4 == 1 || (direction-1)%4 == 2) ? (direction-1)%4 : direction;
+                direction = (Math.random() < 0.5) ? (direction-1)%4 : direction;
+                //direction = ((direction-1)%4 == 1 || (direction-1)%4 == 2) ? (direction-1)%4 : direction;
             } else {
                 direction = (direction-1)%4;
             }
         } else if (canTurnRightCorner) {
             if (getFloodFillRelative(x, y, direction, w, h, murs)[exitX][exitY]) {
-                direction = ((direction+1)%4 == 1 || (direction+1)%4 == 2) ? (direction+1)%4 : direction;
+                direction = (Math.random() < 0.5) ? (direction+1)%4 : direction;
+                //direction = ((direction+1)%4 == 1 || (direction+1)%4 == 2) ? (direction+1)%4 : direction;
             } else {
                 direction = (direction+1)%4;
             }
@@ -146,6 +150,11 @@ public class AIFloodFill implements AI {
         //System.out.println(direction);
         return directionToChar(direction);
         
+    }
+
+    @Override
+    public void paint(Graphics2D g2, double sqSize) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

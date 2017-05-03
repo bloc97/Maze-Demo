@@ -5,6 +5,7 @@
  */
 package labyrinthe;
 
+import java.awt.Point;
 import static java.lang.Thread.sleep;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -13,6 +14,11 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 import static labyrinthe.Helper.getFillSize;
 import static labyrinthe.Helper.getFloodFill;
+import static labyrinthe.Helper.getMuretFromDirection;
+import static labyrinthe.Helper.getPointFromDirection;
+import static labyrinthe.Helper.hasUnvisited;
+import static labyrinthe.Helper.isBorderMuret;
+import static labyrinthe.Helper.isVisited;
 
 /**
  *
@@ -63,101 +69,6 @@ public abstract class RandomGenerators {
             }
         }
         System.out.println("Done.");
-        
-    }
-    public static int[] uniformGeneratePossiblePositions(int w, int h, ListeMuret murs) { //Trouver les positions possibles pour le personnage et la sortie (pas de labyrinthe impossible)
-        
-        System.out.println("Finding Optimal Exit Position...");
-        //Generate exit
-        int lastRow = h-1;
-        int lastCol = w-1;
-        
-        int maxX = lastCol;
-        int maxY = h;
-        boolean isHorz = true;
-        boolean[][] maxGrid = getFloodFill(lastCol, lastRow, w, h, murs);
-        int maxFill = getFillSize(maxGrid);
-        
-        int maxExitProgress = h/2 + w/2;
-        int exitProgress = 0;
-        
-        int acceptableFillSize = (h*w)/4;
-        
-        //for (int i=h/2; i<h; i++) { //Right side openings
-        for (int i=w-1; i>=w/2; i--) { //Bottom side openings
-
-            if (maxFill > acceptableFillSize) {
-                break;
-            }
-
-            boolean[][] grid = getFloodFill(i, lastRow, w, h, murs);
-            int fillSize = getFillSize(grid);
-            //printFill(grid);
-            //System.out.println(fillSize);
-            if (maxFill <= fillSize) {
-                maxX = i;
-                maxY = h;
-                maxFill = fillSize;
-                isHorz = true;
-                maxGrid = grid;
-            }
-            exitProgress++;
-            System.out.println(exitProgress + "/" + maxExitProgress);
-        }
-        for (int i=h-1; i>=h/2; i--) { //Right side openings
-
-            if (maxFill > acceptableFillSize) { //If the exit is large enough
-                break;
-            }
-
-            boolean[][] grid = getFloodFill(lastCol, i, w, h, murs);
-            int fillSize = getFillSize(grid);
-            //printFill(grid);
-            //System.out.println(fillSize);
-            if (maxFill <= fillSize) {
-                maxX = w;
-                maxY = i;
-                maxFill = fillSize;
-                isHorz = false;
-                maxGrid = grid;
-            }
-            exitProgress++;
-            System.out.println(exitProgress + "/" + maxExitProgress);
-        }
-        
-        
-        System.out.println("Done.");
-        //Generate starting position
-        System.out.println("Generating Starting Position...");
-        //Get furthest point from exit (Von Neumann distance)
-        int ptX = 0;
-        int ptY = 0;
-        int lastDist = 0;
-        for (int x=0; x<w; x++) {
-            for (int y=0; y<h; y++) {
-                if (maxGrid[x][y]) {
-                    int currentDist = (w-x)+(h-y); //Von Neumann distance
-                    if (currentDist > lastDist) {
-                        lastDist = currentDist;
-                        ptX = x;
-                        ptY = y;
-                    }
-                }
-            }
-        }
-        
-        final int r = (w+h)/8; //Random distance around the furthest point
-        
-        while(true) {
-            int rX = ptX + (int)(Math.random()*r);
-            int rY = ptY + (int)(Math.random()*r);
-            if (rX >= w) rX = w-1;
-            if (rY >= h) rY = h-1;
-            if (maxGrid[rX][rY]) {
-                System.out.println("Done, Spawning at " + rX + ", " + rY);
-                return new int[] {rX, rY, maxX, maxY, (isHorz) ? 1 : 0};
-            }
-        }
         
     }
     
@@ -295,7 +206,293 @@ public abstract class RandomGenerators {
         
         
     }
-    public static int[] recursiveGeneratePossiblePositions(int w, int h, ListeMuret murs) { //Trouver les positions possibles pour le personnage et la sortie (pas de labyrinthe impossible)
+    
+    
+    public static void depthFirstGenerateWalls(int w, int h, float density, ListeMuret liste, JComponent affichage, double seconds) { //Recursive generation, separate the maze in two recursively until the separation is smaller than 1.
+        System.out.println("Generating World...");
+        
+        int total = w*h;
+        int sleepTimeMs = (int)(seconds*1000)/total;
+        int sleepTimeNs = (int)(((seconds*1000/total) - sleepTimeMs)*1000000);
+        
+        for (int i=0; i<w; i++) { //Murs horizontaux
+            for (int j=0; j<=h; j++) {
+                Muret newMuret = new Muret(i, j, true);
+                if (j == 0 || j == h) {
+                    
+                } else {
+                    newMuret.hide();
+                }
+                liste.push(newMuret);
+            }
+        }
+        for (int i=0; i<=w; i++) { //Murs verticaux
+            for (int j=0; j<h; j++) {
+                Muret newMuret = new Muret(i, j, false);
+                if (i == 0 || i == w) {
+                    
+                } else {
+                    newMuret.hide();
+                }
+                liste.push(newMuret);
+            }
+        }
+        
+        //dFrGenW(0, 0, new boolean[w][h], liste, affichage, sleepTimeMs, sleepTimeNs);
+        dFGenW(w, h, density, liste, affichage, sleepTimeMs, sleepTimeNs);
+        
+        
+        
+        
+        System.out.println("Done.");
+        
+    }
+    private static void dFGenW(int w, int h, float density, ListeMuret liste, JComponent affichage, long sleepTimeMs, int sleepTimeNs) { //Iterative version, longer but no stack overflow.
+        
+        boolean[][] visited = new boolean[w][h];
+        
+        Point currentPoint = new Point(0, 0);
+        LinkedList<Point> stack = new LinkedList<>();
+        
+        visited[currentPoint.x][currentPoint.y] = true;
+        
+        while (hasUnvisited(visited)) {
+            int x = currentPoint.x;
+            int y = currentPoint.y;
+            
+            LinkedList<Integer> unvisitedDirections = new LinkedList<>();
+            for (int i=0; i<4; i++) {
+                if (!isVisited(x, y, i, visited)) {
+                    unvisitedDirections.push(i);
+                }
+                Muret trouveMuret = liste.chercheMuret(x, y, i);
+                if (trouveMuret instanceof Muret) trouveMuret.show();
+            }
+            
+            if (unvisitedDirections.size() > 0) {
+                Collections.shuffle(unvisitedDirections);
+                int direction = unvisitedDirections.getFirst();
+                stack.push(currentPoint);
+                liste.remove(Helper.getMuretFromDirection(x, y, direction));
+                
+                for (int i=1; i<4; i++) { //Remove walls for density control
+                    if (Math.random() > density) {
+                        Muret muret = getMuretFromDirection(x, y, (direction+i)%4);
+                        if (!isBorderMuret(muret, w, h)) {
+                            liste.remove(muret);
+                        }
+                    }
+                }
+                
+                Point newPoint = getPointFromDirection(x, y, direction);
+                visited[newPoint.x][newPoint.y] = true;
+                currentPoint = newPoint;
+                
+            } else if (stack.size() > 0) {
+                currentPoint = stack.pop();
+                try {
+                    affichage.repaint();
+                    sleep(sleepTimeMs, sleepTimeNs);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                return;
+            }
+            
+        }
+        
+        /*
+        LinkedList<Integer> directions = new LinkedList<>();
+        for (int i=0; i<4; i++) {
+            directions.push(i);
+            Muret trouveMuret = liste.chercheMuret(x, y, i);
+            if (trouveMuret instanceof Muret) trouveMuret.show();
+        }
+        
+        for (int i : directions) {
+            if (!Helper.isVisited(x, y, i, visited)) {
+                //System.out.println(x + " " + y + " " + i);
+                liste.remove(Helper.getMuretFromDirection(x, y, i));
+                
+                try {
+                    affichage.repaint();
+                    sleep(sleepTimeMs, sleepTimeNs);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                Point newPoint = Helper.getPointFromDirection(x, y, i);
+                dFrGenW(newPoint.x, newPoint.y, visited, liste, affichage, sleepTimeMs, sleepTimeNs);
+            }
+        }
+        return;
+        */
+    }
+    private static void dFrGenW(int x, int y, boolean[][] visited, ListeMuret liste, JComponent affichage, long sleepTimeMs, int sleepTimeNs) { //Recursive version, stack overflows!
+        visited[x][y] = true;
+        
+        LinkedList<Integer> directions = new LinkedList<>();
+        for (int i=0; i<4; i++) {
+            directions.push(i);
+            Muret trouveMuret = liste.chercheMuret(x, y, i);
+            if (trouveMuret instanceof Muret) trouveMuret.show();
+        }
+        Collections.shuffle(directions);
+        
+        for (int i : directions) {
+            if (!Helper.isVisited(x, y, i, visited)) {
+                //System.out.println(x + " " + y + " " + i);
+                liste.remove(Helper.getMuretFromDirection(x, y, i));
+                
+                try {
+                    affichage.repaint();
+                    sleep(sleepTimeMs, sleepTimeNs);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                Point newPoint = Helper.getPointFromDirection(x, y, i);
+                dFrGenW(newPoint.x, newPoint.y, visited, liste, affichage, sleepTimeMs, sleepTimeNs);
+            }
+        }
+        return;
+        
+    }
+    
+    
+    public static void primGenerateWalls(int w, int h, float density, ListeMuret liste, JComponent affichage, double seconds) {
+        System.out.println("Generating World...");
+        
+        int total = w*h;
+        int sleepTimeMs = (int)(seconds*1000)/total;
+        int sleepTimeNs = (int)(((seconds*1000/total) - sleepTimeMs)*1000000);
+        
+        for (int i=0; i<w; i++) { //Murs horizontaux
+            for (int j=0; j<=h; j++) {
+                Muret newMuret = new Muret(i, j, true);
+                if (j == 0 || j == h) {
+                    
+                } else {
+                    newMuret.hide();
+                }
+                liste.push(newMuret);
+            }
+        }
+        for (int i=0; i<=w; i++) { //Murs verticaux
+            for (int j=0; j<h; j++) {
+                Muret newMuret = new Muret(i, j, false);
+                if (i == 0 || i == w) {
+                    
+                } else {
+                    newMuret.hide();
+                }
+                liste.push(newMuret);
+            }
+        }
+        
+        LinkedList<Muret> wallList = new LinkedList<>();
+        
+        
+        
+    }
+    
+    public static int[] disjointMazeGeneratePossiblePositions(int w, int h, ListeMuret murs) { //Trouver les positions possibles pour le personnage et la sortie dans un labyrinthe disjoint (pour eviter les labyrinthes impossibles)
+        
+        System.out.println("Finding Optimal Exit Position...");
+        //Generate exit
+        int lastRow = h-1;
+        int lastCol = w-1;
+        
+        int maxX = lastCol;
+        int maxY = h;
+        boolean isHorz = true;
+        boolean[][] maxGrid = getFloodFill(lastCol, lastRow, w, h, murs);
+        int maxFill = getFillSize(maxGrid);
+        
+        int maxExitProgress = h/2 + w/2;
+        int exitProgress = 0;
+        
+        int acceptableFillSize = (h*w)/4;
+        
+        //for (int i=h/2; i<h; i++) { //Right side openings
+        for (int i=w-1; i>=w/2; i--) { //Bottom side openings
+
+            if (maxFill > acceptableFillSize) {
+                break;
+            }
+
+            boolean[][] grid = getFloodFill(i, lastRow, w, h, murs);
+            int fillSize = getFillSize(grid);
+            //printFill(grid);
+            //System.out.println(fillSize);
+            if (maxFill <= fillSize) {
+                maxX = i;
+                maxY = h;
+                maxFill = fillSize;
+                isHorz = true;
+                maxGrid = grid;
+            }
+            exitProgress++;
+            System.out.println(exitProgress + "/" + maxExitProgress);
+        }
+        for (int i=h-1; i>=h/2; i--) { //Right side openings
+
+            if (maxFill > acceptableFillSize) { //If the exit is large enough
+                break;
+            }
+
+            boolean[][] grid = getFloodFill(lastCol, i, w, h, murs);
+            int fillSize = getFillSize(grid);
+            //printFill(grid);
+            //System.out.println(fillSize);
+            if (maxFill <= fillSize) {
+                maxX = w;
+                maxY = i;
+                maxFill = fillSize;
+                isHorz = false;
+                maxGrid = grid;
+            }
+            exitProgress++;
+            System.out.println(exitProgress + "/" + maxExitProgress);
+        }
+        
+        
+        System.out.println("Done.");
+        //Generate starting position
+        System.out.println("Generating Starting Position...");
+        //Get furthest point from exit (Von Neumann distance)
+        int ptX = 0;
+        int ptY = 0;
+        int lastDist = 0;
+        for (int x=0; x<w; x++) {
+            for (int y=0; y<h; y++) {
+                if (maxGrid[x][y]) {
+                    int currentDist = (w-x)+(h-y); //Von Neumann distance
+                    if (currentDist > lastDist) {
+                        lastDist = currentDist;
+                        ptX = x;
+                        ptY = y;
+                    }
+                }
+            }
+        }
+        
+        final int r = (w+h)/8; //Random distance around the furthest point
+        
+        while(true) {
+            int rX = ptX + (int)(Math.random()*r);
+            int rY = ptY + (int)(Math.random()*r);
+            if (rX >= w) rX = w-1;
+            if (rY >= h) rY = h-1;
+            if (maxGrid[rX][rY]) {
+                System.out.println("Done, Spawning at " + rX + ", " + rY);
+                return new int[] {rX, rY, maxX, maxY, (isHorz) ? 1 : 0};
+            }
+        }
+        
+    }
+    public static int[] connectedMazeGeneratePossiblePositions(int w, int h, ListeMuret murs) { //Trouver les positions possibles pour le personnage et la sortie dans un labyrinthe de connexite simple
         
         System.out.println("Generating Random Exit Position...");
         
@@ -311,8 +508,6 @@ public abstract class RandomGenerators {
             maxX = w;
             maxY = Helper.randomRange(h-(h/3), lastRow);
         }
-        
-        
         
         System.out.println("Done.");
         

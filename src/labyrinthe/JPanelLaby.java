@@ -102,6 +102,22 @@ public class JPanelLaby extends JPanel {
     }
     
     public void generateNewMaze(int w, int h, float density, long delayms, int lives, double animSeconds) {
+        if (w < 3) {
+            System.out.println("Width cannot be smaller than 3!");
+            w = 3;
+        }
+        if (h < 3) {
+            System.out.println("Height cannot be smaller than 3!");
+            h = 3;
+        }
+        if (w > 500) {
+            System.out.println("Width cannot be bigger than 500!");
+            w = 500;
+        }
+        if (h > 500) {
+            System.out.println("Height cannot be bigger than 500!");
+            h = 500;
+        }
         affichageLaby.setLabyrinthe(new Labyrinthe(w, h, density, delayms, lives));
         affichageLaby.labyrinthe().generate(affichageLaby, animSeconds);
     }
