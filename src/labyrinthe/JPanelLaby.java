@@ -24,24 +24,30 @@ import javax.swing.JPanel;
  *
  * @author bowen
  */
+//Redefine the JPanel for maze
 public class JPanelLaby extends JPanel {
-    
+
+    //Attributes
     private int xsize, ysize;
     private final AffichageLaby affichageLaby;
-    
+
+    //Constructor
     public JPanelLaby(int xsize, int ysize) {
         this.xsize = xsize;
         this.ysize = ysize;
         
-        
+        //Set the layout
         this.setLayout(new BorderLayout(0, 0));
+        //Display maze
         affichageLaby = new AffichageLaby();
         affichageLaby.setPreferredSize(new Dimension(xsize-200, ysize));
         this.add(affichageLaby, BorderLayout.CENTER);
+        //Add buttons and event listeners
         addButtons();
         addEventListeners();
     }
-    
+
+    //Method to add button
     private void addButtons() {
         JPanel movementButtons = new JPanel();
         movementButtons.add(new JButton("hello"));
@@ -49,7 +55,8 @@ public class JPanelLaby extends JPanel {
         movementButtons.add(new JButton("hello3"));
         this.add(movementButtons, BorderLayout.LINE_END);
     }
-    
+
+    //Events
     private void addEventListeners() {
         
         this.addComponentListener(new ComponentAdapter() {
@@ -100,7 +107,7 @@ public class JPanelLaby extends JPanel {
             }
         });
     }
-    
+    //Generate the maze
     public void generateNewMaze(int w, int h, float density, long delayms, int lives, double animSeconds) {
         affichageLaby.setLabyrinthe(new Labyrinthe(w, h, density, delayms, lives));
         affichageLaby.labyrinthe().generate(affichageLaby, animSeconds);

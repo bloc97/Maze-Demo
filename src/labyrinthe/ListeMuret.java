@@ -13,13 +13,17 @@ import java.util.Iterator;
  * @author bowen
  */
 public class ListeMuret implements Iterable<Muret> {
+    //First node attribute
     private NoeudMuret first;
     
     public ListeMuret() {
     }
+
+    //Constructor
     public ListeMuret(NoeudMuret first) {
         this.first = first;
     }
+    //Push fucntion allow to add
     public void push(Muret mur) {
         first = new NoeudMuret(mur, first);
     }
@@ -28,6 +32,7 @@ public class ListeMuret implements Iterable<Muret> {
         first = first.next();
         return mur;
     }
+    //Check if can remove a wall
     public boolean remove(Muret mur) {
         NoeudMuret currentNoeud = first;
         while(currentNoeud.next() instanceof NoeudMuret) {
@@ -38,6 +43,7 @@ public class ListeMuret implements Iterable<Muret> {
         }
         return false;
     }
+    //Return the size of a wall
     public int size() {
         int size = 0;
         for (Muret mur : this) {
@@ -45,7 +51,7 @@ public class ListeMuret implements Iterable<Muret> {
         }
         return size;
     }
-    @Override
+    //Iterator
     public Iterator<Muret> iterator() {
         return new IteratorMuret(first);
     }
@@ -54,11 +60,13 @@ public class ListeMuret implements Iterable<Muret> {
             thisMur.hide();
         }
     }
+    //Display the walls
     public void show() {
         for (Muret thisMur: this) {
             thisMur.show();
         }
     }
+    //Look for a wall
     public Muret chercheMuret(Muret mur) {
         for (Muret thisMur : this) {
             if (thisMur.equals(mur)) {
@@ -67,9 +75,11 @@ public class ListeMuret implements Iterable<Muret> {
         }
         return null;
     }
+    //look for a specific wall
     public Muret chercheMuret(int x, int y, boolean isHorz) {
         return chercheMuret(new Muret(x, y, isHorz));
     }
+    //Look for a specific wall using specific input chars
     public Muret chercheMuret(int x, int y, char cardinalDirection) {
         switch(cardinalDirection) {
             case 'N':

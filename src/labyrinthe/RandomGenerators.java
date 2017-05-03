@@ -19,7 +19,7 @@ import static labyrinthe.Helper.getFloodFill;
  * @author bowen
  */
 public abstract class RandomGenerators {
-    
+    //Rng for walls
     public static void uniformGenerateWalls(int w, int h, float density, ListeMuret liste, JComponent affichage, double seconds) { //Naive uniform generation
         System.out.println("Generating World...");
         

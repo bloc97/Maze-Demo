@@ -23,14 +23,15 @@ public class Labyrinthe {
     private AI ai = new AIFloodFill();
     
     private int winX, winY;
-    
+
+    //Constructor with 5 params: Lenght,height,density, time and number of lives
     public Labyrinthe(int w, int h, float density, long delayms, int lives) {
         this.l = w;
         this.h = h;
         this.density = density;
         this.initialLives = lives;
     }
-    
+    //Function to generate maze
     public void generate(JComponent affichage, double seconds) {
         System.out.println("Initialising Maze...");
         murs = new ListeMuret();
@@ -46,7 +47,7 @@ public class Labyrinthe {
         
         affichage.repaint();
     }
-    
+    //Ai implementation to get the next direction
     public void stepAI(JComponent affichage) {
         char dir = ai.getNextDirection(pers.x(), pers.y(), l, h, murs, sortie, affichage);
         
@@ -58,22 +59,26 @@ public class Labyrinthe {
             deplace(dir);
         }
     }
-    
+    //Getters for width and height
     public int w() {
         return l;
     }
     public int h() {
         return h;
     }
+    //Getter for the player character
     public Personnage personnage() {
         return pers;
     }
+    //Get walls
     public ListeMuret murs() {
         return murs;
     }
+    //Get exit
     public Muret sortie() {
         return sortie;
     }
+    //Condition check if can move otherwise there is a wall, return false
     public boolean canDeplace(char direction) {
         Muret mur;
         switch(direction) {
@@ -99,6 +104,7 @@ public class Labyrinthe {
         }
         return true;
     }
+    //Move the character toward the specified direction location
     public boolean deplace(char direction) {
         if (canDeplace(direction)) {
         switch(direction) {
