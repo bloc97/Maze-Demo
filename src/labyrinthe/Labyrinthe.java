@@ -64,25 +64,22 @@ public class Labyrinthe {
             deplace(dir);
         }
     }
-<<<<<<< HEAD
     
-    
-=======
     //Getters for width and height
->>>>>>> origin/master
+
     public int w() {
         return l;
     }
     public int h() {
         return h;
     }
-<<<<<<< HEAD
+    
     public AI ai() {
         return ai;
     }
-=======
+    
     //Getter for the player character
->>>>>>> origin/master
+
     public Personnage personnage() {
         return pers;
     }

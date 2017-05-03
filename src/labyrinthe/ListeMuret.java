@@ -80,7 +80,7 @@ public class ListeMuret implements Iterable<Muret> {
     public Muret chercheMuret(int x, int y, boolean isHorz) {
         return chercheMuret(new Muret(x, y, isHorz));
     }
-<<<<<<< HEAD
+    
     public Muret chercheMuret(int x, int y, int direction) {
         switch(direction) {
             case 0:
@@ -95,9 +95,9 @@ public class ListeMuret implements Iterable<Muret> {
                 return chercheMuret(x, y, (direction+4)%4);
         }
     }
-=======
+    
     //Look for a specific wall using specific input chars
->>>>>>> origin/master
+    
     public Muret chercheMuret(int x, int y, char cardinalDirection) {
         switch(cardinalDirection) {
             case 'N':

@@ -46,12 +46,9 @@ public class AffichageLaby extends JComponent {
         this.h = h;
         setPreferredSize(new Dimension(w, h));
     }
-<<<<<<< HEAD
     
-    
-=======
     //Override le paintComponent
->>>>>>> origin/master
+
     @Override
     protected void paintComponent(Graphics g) {
         prePaint();
