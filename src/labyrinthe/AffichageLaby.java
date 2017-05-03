@@ -20,26 +20,33 @@ import javax.swing.JComponent;
  *
  * @author bowen
  */
+
+//Afficher le labyrinthe
 public class AffichageLaby extends JComponent {
     private Labyrinthe laby;
     private int w, h;
-    
+
+
     public AffichageLaby() {
         //this.setBackground(new Color(241, 239, 236));
     }
+
+    //Getter
     public Labyrinthe labyrinthe() {
         return laby;
     }
+    //Setter
     public void setLabyrinthe(Labyrinthe labyrinthe) {
         laby = labyrinthe;
         repaint();
     }
+    //Set la taille
     public void setCustomSize(int w, int h) {
         this.w = w;
         this.h = h;
         setPreferredSize(new Dimension(w, h));
     }
-    
+    //Override le paintComponent
     @Override
     protected void paintComponent(Graphics g) {
         prePaint();
@@ -51,6 +58,7 @@ public class AffichageLaby extends JComponent {
     protected void prePaint() {
         
     };
+
     protected void onPaint(Graphics2D g2) {
         
         if (laby == null) {
