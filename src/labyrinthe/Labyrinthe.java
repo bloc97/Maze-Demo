@@ -28,6 +28,7 @@ public class Labyrinthe {
     private boolean doAnim;
     
     private int aiDelay;
+    private int aiAnimDelay;
     
     private Personnage pers;
     private ListeMuret murs;
@@ -42,8 +43,6 @@ public class Labyrinthe {
     
     private int[] lastStartingState;
     
-    private GeneratorType lastType = NAIVEUNIFORM;
-    
     private boolean isGenerating = true;
     private boolean isAIenabled;
     private boolean automaticRestart;
@@ -53,7 +52,7 @@ public class Labyrinthe {
     private Timer aiTimer;
 
     //Constructor with 5 params: Lenght,height,density, time and number of lives
-    public Labyrinthe(int w, int h, JPanelLaby affichage, float density, GeneratorType type, long delayms, int lives, int waitms, boolean doAnim, AIType aiType, int aiDelay, boolean isAIenabled, boolean automaticRestart) {
+    public Labyrinthe(int w, int h, JPanelLaby affichage, float density, GeneratorType type, long delayms, int lives, int waitms, boolean doAnim, AIType aiType, int aiDelay, int aiAnimDelay, boolean isAIenabled, boolean automaticRestart) {
         this.l = w;
         this.h = h;
         this.affichage = affichage;
@@ -65,6 +64,7 @@ public class Labyrinthe {
         this.initialLives = lives;
         this.aiType = aiType;
         this.aiDelay = aiDelay;
+        this.aiAnimDelay = aiAnimDelay;
         this.isAIenabled = isAIenabled;
         this.automaticRestart = automaticRestart;
     }
@@ -108,6 +108,7 @@ public class Labyrinthe {
         winY = (sortie.isHorz) ? sortie.y-1 : sortie.y;
         ai = AI.getNewAI(aiType);
         isGenerating = false;
+        
         aiTimer = new Timer(aiDelay, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -185,6 +186,9 @@ public class Labyrinthe {
             aiTimer.setDelay(aiDelay);
         }
     }
+    public void setAIAnimDelay(int aiAnimDelay) {
+        this.aiAnimDelay = aiAnimDelay;
+    }
     public void enableRestart() {
         automaticRestart = true;
     }
@@ -221,7 +225,7 @@ public class Labyrinthe {
         if (ai == null) {
             ai = AI.getNewAI(aiType);
         }
-        char dir = ai.getNextDirection(pers.x(), pers.y(), l, h, murs, sortie, affichage);
+        char dir = ai.getNextDirection(pers.x(), pers.y(), l, h, murs, sortie, affichage, aiAnimDelay);
         
         deplace(dir);
     }

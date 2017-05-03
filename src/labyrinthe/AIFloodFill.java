@@ -90,7 +90,7 @@ public class AIFloodFill implements AI {
     
 
     @Override
-    public char getNextDirection(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage) {
+    public char getNextDirection(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage, int animWait) {
         //System.out.println(canMoveTop + " " + canMoveRight + " " + canMoveBottom + " " + canMoveLeft);
         //System.out.println(canMove(0, x, y, w, h, murs) + " " + canMove(1, x, y, w, h, murs) + " " + canMove(2, x, y, w, h, murs) + " " + canMove(3, x, y, w, h, murs));
         

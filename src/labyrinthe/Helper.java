@@ -235,5 +235,20 @@ public abstract class Helper {
         }
         return false;
     }
+
+    public static boolean canMove(int d, int x, int y, int w, int h, ListeMuret murs) {
+        switch (d) {
+            case 0:
+                return murs.chercheMuret(x, y, 'N') == null;
+            case 1:
+                return murs.chercheMuret(x, y, 'E') == null;
+            case 2:
+                return murs.chercheMuret(x, y, 'S') == null;
+            case 3:
+                return murs.chercheMuret(x, y, 'W') == null;
+            default:
+                return canMove((d + 4) % 4, x, y, w, h, murs);
+        }
+    }
     
 }

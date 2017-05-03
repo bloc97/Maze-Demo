@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import javax.swing.JComponent;
 import static labyrinthe.Helper.canDeplace;
+import static labyrinthe.Helper.canMove;
 import static labyrinthe.Helper.createArrow;
 import static labyrinthe.Helper.directionToChar;
 import static labyrinthe.Helper.getFloodFillRelative;
@@ -29,10 +30,13 @@ public class AIGreedyFloodFill implements AI {
     private int direction; //0N, 1E, 2S, 3W
     private int[][] visited;
     
+    private Point fillingPoint;
+    private boolean[][] fillingBoard;
+    
     public AIGreedyFloodFill() {
         direction = Helper.randomRange(1, 2);
     }
-    public boolean getCorner(int d, int d2, int x, int y, int w, int h, ListeMuret murs) {
+    public static boolean getCorner(int d, int d2, int x, int y, int w, int h, ListeMuret murs) {
         
         if ((d == 0 && d2 == 3) || (d == 3 && d2 == 0)) {
             return topLeft(x, y, w, h, murs);
@@ -46,7 +50,7 @@ public class AIGreedyFloodFill implements AI {
         return getCorner((d+4)%4, (d2+4)%4, x, y, w, h, murs);
         
     }
-    public boolean topLeft(int x, int y, int w, int h, ListeMuret murs) { //checks for topleft junction
+    public static boolean topLeft(int x, int y, int w, int h, ListeMuret murs) { //checks for topleft junction
         if (x-1 < 0 || y-1 < 0) {
             return true;
         }
@@ -55,7 +59,7 @@ public class AIGreedyFloodFill implements AI {
         }
         return false;
     }
-    public boolean topRight(int x, int y, int w, int h, ListeMuret murs) { //checks for topright junction
+    public static boolean topRight(int x, int y, int w, int h, ListeMuret murs) { //checks for topright junction
         if (x+1 > w || y-1 < 0) {
             return true;
         }
@@ -64,7 +68,7 @@ public class AIGreedyFloodFill implements AI {
         }
         return false;
     }
-    public boolean bottomLeft(int x, int y, int w, int h, ListeMuret murs) {
+    public static boolean bottomLeft(int x, int y, int w, int h, ListeMuret murs) {
         if (x-1 < 0 || y+1 > h) {
             return true;
         }
@@ -73,7 +77,7 @@ public class AIGreedyFloodFill implements AI {
         }
         return false;
     }
-    public boolean bottomRight(int x, int y, int w, int h, ListeMuret murs) {
+    public static boolean bottomRight(int x, int y, int w, int h, ListeMuret murs) {
         if (x+1 > w || y+1 > h) {
             return true;
         }
@@ -83,27 +87,13 @@ public class AIGreedyFloodFill implements AI {
         return false;
     }
     
-    public boolean canMove(int d, int x, int y, int w, int h, ListeMuret murs) {
-        switch (d) {
-            case 0:
-                return murs.chercheMuret(x, y, 'N') == null;
-            case 1:
-                return murs.chercheMuret(x, y, 'E') == null;
-            case 2:
-                return murs.chercheMuret(x, y, 'S') == null;
-            case 3:
-                return murs.chercheMuret(x, y, 'W') == null;
-            default:
-                return canMove((d+4)%4, x, y, w, h, murs);
-        }
-    }
     
-    private double distanceScore(int x, int y, Muret sortie) {
+    private static double distanceScore(int x, int y, Muret sortie) {
         //return Math.abs(sortie.x-x) + Math.abs(sortie.y - y);
         return (sortie.x-x)*(sortie.x-x) + (sortie.y-y)*(sortie.y-y);
         //return Math.sqrt((sortie.x-x)*(sortie.x-x) + (sortie.y-y)*(sortie.y-y));
     }
-    private double distanceScore(int d, int x, int y, Muret sortie) {
+    private static double distanceScore(int d, int x, int y, Muret sortie) {
         switch (d) {
             case 0:
                 return distanceScore(x, y-1, sortie);
@@ -119,7 +109,7 @@ public class AIGreedyFloodFill implements AI {
     }
 
     @Override
-    public char getNextDirection(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage) {
+    public char getNextDirection(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage, int animWait) {
         
         if (visited == null) {
             visited = new int[w][h];

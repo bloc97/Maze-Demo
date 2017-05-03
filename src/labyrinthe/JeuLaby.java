@@ -41,7 +41,7 @@ public class JeuLaby {
         int defaultW = width*9/10;
         int defaultH = height*9/10;
         JFrameLaby frame = new JFrameLaby(defaultW, defaultH);
-        JPanelLaby panel = new JPanelLaby(defaultW, defaultH, l, h, density, GeneratorType.NAIVEUNIFORM, delayms, lives, 10, true, AIType.GREEDYFILL, 100);
+        JPanelLaby panel = new JPanelLaby(defaultW, defaultH, l, h, density, GeneratorType.NAIVEUNIFORM, delayms, lives, 10, AIType.GREEDYFILL);
         frame.add(panel);
         panel.setFocusable(true);
         panel.thread.start();

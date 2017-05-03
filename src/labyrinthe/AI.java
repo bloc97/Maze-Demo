@@ -18,9 +18,9 @@ public interface AI {
     }
     
     public static AI getNewAI(AIType type) {
-        return new AIGreedyFloodFill();
+        return new AIDepthFirst();
     }
     
-    public char getNextDirection(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage);
+    public char getNextDirection(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage, int animWait);
     public void paint(Graphics2D g2, double sqSize);
 }

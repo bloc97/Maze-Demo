@@ -68,9 +68,10 @@ public class JPanelLaby extends JPanel implements Runnable {
     private long delayms;
     private int lives;
     private int waitms;
-    private boolean doAnim;
+    private boolean doGenAnim = true;
     private AIType aiType;
-    private int aiDelay;
+    private int aiMovementDelay = 100;
+    private int aiAnimationDelay = 10;
     
     private boolean isAIEnabled = false;
     private boolean isAutoRestart = false;
@@ -83,7 +84,7 @@ public class JPanelLaby extends JPanel implements Runnable {
     private boolean generateMazeNext = true;
 
     //Constructor
-    public JPanelLaby(int xsize, int ysize, int w, int h, float density, GeneratorType type, long delayms, int lives, int waitms, boolean doAnim, AIType aiType, int aiDelay) {
+    public JPanelLaby(int xsize, int ysize, int w, int h, float density, GeneratorType type, long delayms, int lives, int waitms, AIType aiType) {
         this.xsize = xsize;
         this.ysize = ysize;
         thread = new Thread(this);
@@ -95,9 +96,7 @@ public class JPanelLaby extends JPanel implements Runnable {
         this.delayms = delayms;
         this.lives = lives;
         this.waitms = waitms;
-        this.doAnim = doAnim;
         this.aiType = aiType;
-        this.aiDelay = aiDelay;
         
         
         setSize(xsize, ysize);
@@ -189,7 +188,8 @@ public class JPanelLaby extends JPanel implements Runnable {
         JComboBox<String> aiCombo = new JComboBox(new String[] {"Naive Wall Follow","Greedy + Flood Fill","Depth-First", "Etc"});
         aiCombo.setSelectedIndex(1);
         
-        JSlider aiSpeedSlider = new JSlider(0, 1000, (aiDelay>1000) ? 0 : 1000-aiDelay);
+        JSlider aiSpeedSlider = new JSlider(0, 1000, (aiMovementDelay>1000) ? 0 : 1000-aiMovementDelay);
+        JSlider aiAnimSlider = new JSlider(0, 100, (aiAnimationDelay>100) ? 0 : 100-aiAnimationDelay);
         
         JCheckBox enableAICheck = new JCheckBox("Enable AI");
         JCheckBox enableRestartCheck = new JCheckBox("Automatic Restart");
@@ -266,17 +266,24 @@ public class JPanelLaby extends JPanel implements Runnable {
             public void stateChanged(ChangeEvent e) {
                 waitms = 50-genSpeedSlider.getValue();
                 if (waitms == 0) {
-                    doAnim = false;
+                    doGenAnim = false;
                 } else {
-                    doAnim = true;
+                    doGenAnim = true;
                 }
             }
         });
         aiSpeedSlider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                aiDelay = 1000-aiSpeedSlider.getValue();
-                affichageLaby.labyrinthe().setAIDelay(aiDelay);
+                aiMovementDelay = 1000-aiSpeedSlider.getValue();
+                affichageLaby.labyrinthe().setAIDelay(aiMovementDelay);
+            }
+        });
+        aiAnimSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                aiAnimationDelay = 100-aiAnimSlider.getValue();
+                affichageLaby.labyrinthe().setAIAnimDelay(aiAnimationDelay);
             }
         });
         genCombo.addActionListener(new ActionListener() {
@@ -441,18 +448,26 @@ public class JPanelLaby extends JPanel implements Runnable {
         c.gridwidth = 3;
         c.gridx = 0;
         c.gridy = 16;
-        cpanel.add(new JLabel("AI Speed:"), c);
+        cpanel.add(new JLabel("AI Animation Speed:"), c);
         c.gridwidth = 3;
         c.gridx = 0;
         c.gridy = 17;
-        cpanel.add(aiSpeedSlider, c);
+        cpanel.add(aiAnimSlider, c);
         c.gridwidth = 3;
         c.gridx = 0;
         c.gridy = 18;
-        cpanel.add(enableAICheck, c);
+        cpanel.add(new JLabel("AI Movement Speed:"), c);
         c.gridwidth = 3;
         c.gridx = 0;
         c.gridy = 19;
+        cpanel.add(aiSpeedSlider, c);
+        c.gridwidth = 3;
+        c.gridx = 0;
+        c.gridy = 20;
+        cpanel.add(enableAICheck, c);
+        c.gridwidth = 3;
+        c.gridx = 0;
+        c.gridy = 21;
         cpanel.add(enableRestartCheck, c);
         //movementButtons.add(myCombo);
         
@@ -545,7 +560,7 @@ public class JPanelLaby extends JPanel implements Runnable {
             System.out.println("Height cannot be bigger than 500!");
             h = 500;
         }
-        affichageLaby.setLabyrinthe(new Labyrinthe(w, h, this, density, type, delayms, lives, waitms, doAnim, aiType, aiDelay, isAIEnabled, isAutoRestart));
+        affichageLaby.setLabyrinthe(new Labyrinthe(w, h, this, density, type, delayms, lives, waitms, doGenAnim, aiType, aiMovementDelay, aiAnimationDelay, isAIEnabled, isAutoRestart));
         affichageLaby.labyrinthe().generate();
         generateMazeNext = false;
     }
