@@ -19,6 +19,7 @@ import static labyrinthe.Helper.getPointFromDirection;
 import static labyrinthe.Helper.hasUnvisited;
 import static labyrinthe.Helper.isBorderMuret;
 import static labyrinthe.Helper.isVisited;
+import static labyrinthe.Helper.randomRange;
 
 /**
  *
@@ -26,6 +27,11 @@ import static labyrinthe.Helper.isVisited;
  */
 public abstract class RandomGenerators {
     //Rng for walls
+    
+    public enum GeneratorType {
+        NAIVEUNIFORM, RECURSIVE, DEPTHFIRST, PRIM;
+    }
+    
     public static void uniformGenerateWalls(int w, int h, float density, ListeMuret liste, JComponent affichage, double seconds) { //Naive uniform generation
         System.out.println("Generating World...");
         
@@ -215,30 +221,9 @@ public abstract class RandomGenerators {
         int sleepTimeMs = (int)(seconds*1000)/total;
         int sleepTimeNs = (int)(((seconds*1000/total) - sleepTimeMs)*1000000);
         
-        for (int i=0; i<w; i++) { //Murs horizontaux
-            for (int j=0; j<=h; j++) {
-                Muret newMuret = new Muret(i, j, true);
-                if (j == 0 || j == h) {
-                    
-                } else {
-                    newMuret.hide();
-                }
-                liste.push(newMuret);
-            }
-        }
-        for (int i=0; i<=w; i++) { //Murs verticaux
-            for (int j=0; j<h; j++) {
-                Muret newMuret = new Muret(i, j, false);
-                if (i == 0 || i == w) {
-                    
-                } else {
-                    newMuret.hide();
-                }
-                liste.push(newMuret);
-            }
-        }
+        fillWallsHide(w, h, liste);
         
-        //dFrGenW(0, 0, new boolean[w][h], liste, affichage, sleepTimeMs, sleepTimeNs);
+        //dFrGenW(randomRange(0, w-1), randomRange(0, h-1), new boolean[w][h], liste, affichage, sleepTimeMs, sleepTimeNs);
         dFGenW(w, h, density, liste, affichage, sleepTimeMs, sleepTimeNs);
         
         
@@ -251,7 +236,7 @@ public abstract class RandomGenerators {
         
         boolean[][] visited = new boolean[w][h];
         
-        Point currentPoint = new Point(0, 0);
+        Point currentPoint = new Point(randomRange(0, w-1), randomRange(0, h-1));
         LinkedList<Point> stack = new LinkedList<>();
         
         visited[currentPoint.x][currentPoint.y] = true;
@@ -301,33 +286,6 @@ public abstract class RandomGenerators {
             }
             
         }
-        
-        /*
-        LinkedList<Integer> directions = new LinkedList<>();
-        for (int i=0; i<4; i++) {
-            directions.push(i);
-            Muret trouveMuret = liste.chercheMuret(x, y, i);
-            if (trouveMuret instanceof Muret) trouveMuret.show();
-        }
-        
-        for (int i : directions) {
-            if (!Helper.isVisited(x, y, i, visited)) {
-                //System.out.println(x + " " + y + " " + i);
-                liste.remove(Helper.getMuretFromDirection(x, y, i));
-                
-                try {
-                    affichage.repaint();
-                    sleep(sleepTimeMs, sleepTimeNs);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                
-                Point newPoint = Helper.getPointFromDirection(x, y, i);
-                dFrGenW(newPoint.x, newPoint.y, visited, liste, affichage, sleepTimeMs, sleepTimeNs);
-            }
-        }
-        return;
-        */
     }
     private static void dFrGenW(int x, int y, boolean[][] visited, ListeMuret liste, JComponent affichage, long sleepTimeMs, int sleepTimeNs) { //Recursive version, stack overflows!
         visited[x][y] = true;
@@ -364,10 +322,102 @@ public abstract class RandomGenerators {
     public static void primGenerateWalls(int w, int h, float density, ListeMuret liste, JComponent affichage, double seconds) {
         System.out.println("Generating World...");
         
-        int total = w*h;
+        int total = w*h*4;
         int sleepTimeMs = (int)(seconds*1000)/total;
         int sleepTimeNs = (int)(((seconds*1000/total) - sleepTimeMs)*1000000);
         
+        fillWallsHide(w, h, liste);
+        
+        LinkedList<Muret> wallList = new LinkedList<>();
+        
+        int x0 = randomRange(0, w-1);
+        int y0 = randomRange(0, h-1);
+        
+        boolean[][] visited = new boolean[w][h];
+        for (int i=0; i<4; i++) {
+            Muret mur = liste.chercheMuret(x0, y0, i);
+            if (mur instanceof Muret) {
+                mur.show();
+                wallList.push(mur);
+            }
+        }
+        visited[x0][y0] = true;
+        
+        while (wallList.size() > 0) {
+            Collections.shuffle(wallList);
+            Muret mur = wallList.getFirst();
+            
+            if (mur.isHorz) {
+                boolean isTopVisited = isVisited(mur.x, mur.y-1, visited);
+                boolean isBottomVisited = isVisited(mur.x, mur.y, visited);
+                if (isTopVisited ^ isBottomVisited) {
+                    liste.remove(mur);
+                    if (isTopVisited) {
+                        visited[mur.x][mur.y] = true;
+                        for (int i=0; i<4; i++) {
+                            Muret newMur = liste.chercheMuret(mur.x, mur.y, i);
+                            if (newMur instanceof Muret) {
+                                newMur.show();
+                                wallList.push(newMur);
+                            }
+                        }
+                    } else {
+                        visited[mur.x][mur.y-1] = true;
+                        for (int i=0; i<4; i++) {
+                            Muret newMur = liste.chercheMuret(mur.x, mur.y-1, i);
+                            if (newMur instanceof Muret) {
+                                newMur.show();
+                                wallList.push(newMur);
+                            }
+                        }
+                    }
+                } else {
+                    wallList.remove(mur);
+                }
+            } else {
+                boolean isLeftVisited = isVisited(mur.x-1, mur.y, visited);
+                boolean isRightVisited = isVisited(mur.x, mur.y, visited);
+                if (isLeftVisited ^ isRightVisited) {
+                    liste.remove(mur);
+                    if (isLeftVisited) {
+                        visited[mur.x][mur.y] = true;
+                        for (int i=0; i<4; i++) {
+                            Muret newMur = liste.chercheMuret(mur.x, mur.y, i);
+                            if (newMur instanceof Muret) {
+                                newMur.show();
+                                wallList.push(newMur);
+                            }
+                        }
+                    } else {
+                        visited[mur.x-1][mur.y] = true;
+                        for (int i=0; i<4; i++) {
+                            Muret newMur = liste.chercheMuret(mur.x-1, mur.y, i);
+                            if (newMur instanceof Muret) {
+                                newMur.show();
+                                wallList.push(newMur);
+                            }
+                        }
+                    }
+                } else {
+                    wallList.remove(mur);
+                }
+            }
+            
+
+            try {
+                affichage.repaint();
+                sleep(sleepTimeMs, sleepTimeNs);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            
+        }
+        
+        
+    }
+    
+    private static void fillWallsHide(int w, int h, ListeMuret liste) {
         for (int i=0; i<w; i++) { //Murs horizontaux
             for (int j=0; j<=h; j++) {
                 Muret newMuret = new Muret(i, j, true);
@@ -390,11 +440,6 @@ public abstract class RandomGenerators {
                 liste.push(newMuret);
             }
         }
-        
-        LinkedList<Muret> wallList = new LinkedList<>();
-        
-        
-        
     }
     
     public static int[] disjointMazeGeneratePossiblePositions(int w, int h, ListeMuret murs) { //Trouver les positions possibles pour le personnage et la sortie dans un labyrinthe disjoint (pour eviter les labyrinthes impossibles)
@@ -513,7 +558,7 @@ public abstract class RandomGenerators {
         
         System.out.println("Generating Random Starting Position...");
         
-        double r = Math.min(w, h)/6;
+        double r = Math.min(w, h)/4;
         
         int rX = (int)(Math.random()*r);
         int rY = (int)(Math.random()*r);

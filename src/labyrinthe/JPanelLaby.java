@@ -9,6 +9,7 @@ import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -16,9 +17,15 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Vector;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import labyrinthe.RandomGenerators.GeneratorType;
 
 /**
  *
@@ -30,6 +37,7 @@ public class JPanelLaby extends JPanel {
     //Attributes
     private int xsize, ysize;
     private final AffichageLaby affichageLaby;
+    private final JPanel controlPanel;
 
     //Constructor
     public JPanelLaby(int xsize, int ysize) {
@@ -43,17 +51,34 @@ public class JPanelLaby extends JPanel {
         affichageLaby.setPreferredSize(new Dimension(xsize-200, ysize));
         this.add(affichageLaby, BorderLayout.CENTER);
         //Add buttons and event listeners
+        controlPanel = new JPanel();
+        
         addButtons();
         addEventListeners();
     }
-
+    
+    public JPanel controlPanel() {
+        return controlPanel;
+    }
+    
     //Method to add button
     private void addButtons() {
-        JPanel movementButtons = new JPanel();
-        movementButtons.add(new JButton("hello"));
-        movementButtons.add(new JButton("hello2"));
-        movementButtons.add(new JButton("hello3"));
+        JPanel movementButtons = controlPanel;
+        movementButtons.setPreferredSize(new Dimension(200, 0));
+        FlowLayout experimentLayout = new FlowLayout(FlowLayout.CENTER);
+        movementButtons.setLayout(experimentLayout);
+        movementButtons.add(new JButton("                    H                    "));
+        movementButtons.add(new JButton("G"));
+        movementButtons.add(new JButton("D"));
+        movementButtons.add(new JButton("                    B                    "));
+        Vector<String> types = new Vector<>();
+        types.add("Naive Uniform");
+        //movementButtons.add(myCombo);
         this.add(movementButtons, BorderLayout.LINE_END);
+        
+        invalidate();
+        updateUI();
+        repaint();
     }
 
     //Events
@@ -108,7 +133,7 @@ public class JPanelLaby extends JPanel {
         });
     }
     //Generate the maze
-    public void generateNewMaze(int w, int h, float density, long delayms, int lives, double animSeconds) {
+    public void generateNewMaze(int w, int h, float density, GeneratorType type, long delayms, int lives, double animSeconds) {
         if (w < 3) {
             System.out.println("Width cannot be smaller than 3!");
             w = 3;
@@ -126,7 +151,7 @@ public class JPanelLaby extends JPanel {
             h = 500;
         }
         affichageLaby.setLabyrinthe(new Labyrinthe(w, h, density, delayms, lives));
-        affichageLaby.labyrinthe().generate(affichageLaby, animSeconds);
+        affichageLaby.labyrinthe().generate(type, affichageLaby, animSeconds);
     }
 
     

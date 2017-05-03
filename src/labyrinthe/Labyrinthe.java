@@ -6,6 +6,8 @@
 package labyrinthe;
 
 import javax.swing.JComponent;
+import labyrinthe.RandomGenerators.GeneratorType;
+import static labyrinthe.RandomGenerators.GeneratorType.NAIVEUNIFORM;
 
 /**
  *
@@ -23,6 +25,8 @@ public class Labyrinthe {
     private AI ai = new AIGreedyFloodFill();
     
     private int winX, winY;
+    
+    private GeneratorType lastType = NAIVEUNIFORM;
 
     //Constructor with 5 params: Lenght,height,density, time and number of lives
     public Labyrinthe(int w, int h, float density, long delayms, int lives) {
@@ -32,13 +36,35 @@ public class Labyrinthe {
         this.initialLives = lives;
     }
     //Function to generate maze
-    public void generate(JComponent affichage, double seconds) {
+    public void generate(GeneratorType type, JComponent affichage, double seconds) {
         System.out.println("Initialising Maze...");
+        lastType = type;
         murs = new ListeMuret();
-        //RandomGenerators.uniformGenerateWalls(l, h, density, murs, affichage, seconds);
-        RandomGenerators.depthFirstGenerateWalls(l, h, density, murs, affichage, seconds);
-        int[] pos = RandomGenerators.connectedMazeGeneratePossiblePositions(l, h, murs);
-        System.out.println("Starting Maze.");
+        int[] pos;
+        switch (type) {
+            case NAIVEUNIFORM:
+                RandomGenerators.uniformGenerateWalls(l, h, density, murs, affichage, seconds);
+                pos = RandomGenerators.disjointMazeGeneratePossiblePositions(l, h, murs);
+                break;
+            case RECURSIVE:
+                RandomGenerators.recursiveGenerateWalls(l, h, density, murs, affichage, seconds);
+                pos = RandomGenerators.connectedMazeGeneratePossiblePositions(l, h, murs);
+                break;
+            case DEPTHFIRST:
+                RandomGenerators.depthFirstGenerateWalls(l, h, density, murs, affichage, seconds);
+                pos = RandomGenerators.connectedMazeGeneratePossiblePositions(l, h, murs);
+                break;
+            case PRIM:
+                RandomGenerators.primGenerateWalls(l, h, density, murs, affichage, seconds);
+                pos = RandomGenerators.connectedMazeGeneratePossiblePositions(l, h, murs);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown generator type!");
+        }
+        
+        
+        
+        System.out.println("Starting Maze.\n");
         pers = new Personnage(pos[0], pos[1], initialLives);
         sortie = new Muret(pos[2], pos[3], pos[4] == 1);
         
@@ -55,7 +81,7 @@ public class Labyrinthe {
         char dir = ai.getNextDirection(pers.x(), pers.y(), l, h, murs, sortie, affichage);
         
         if (pers.x() == winX && pers.y() == winY) {
-            this.generate(affichage, 0);
+            this.generate(lastType, affichage, 0);
             ai = new AIGreedyFloodFill();
             return;
         }

@@ -7,6 +7,8 @@ package labyrinthe;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import javax.swing.JComboBox;
+import labyrinthe.RandomGenerators.GeneratorType;
 
 /**
  *
@@ -35,8 +37,10 @@ public class JeuLaby {
         frame.add(panel);
         panel.setFocusable(true);
         //panel.launch();
+        JComboBox<String> myCombo = new JComboBox(new String[] {"Naive Uniform","Recursive","Depth-First", "Prim"});
+        panel.controlPanel().add(myCombo);
         
-        panel.generateNewMaze(20, 20, 1f, 1000l, 5, 2);
+        panel.generateNewMaze(20, 20, 0.2f, GeneratorType.NAIVEUNIFORM, 1000l, 5, 2);
         
         
     }
