@@ -18,11 +18,13 @@ import java.util.LinkedList;
  * @author bowen
  */
 public class Personnage {
+    //Attributes
     private int x,y;
     private int vies;
     
     private LinkedList<Point> history;
-    
+
+    //Constructor Assigns initial lifepoints and positions
     public Personnage(int x, int y, int vies) {
         this.x = x;
         this.y = y;
@@ -30,33 +32,42 @@ public class Personnage {
         history = new LinkedList<>();
         history.add(new Point(x, y));
     }
-    
+
+    //Return the current number of lives
     public int vies() {
         return vies;
     }
+    //Decrement the life upon damaged
     public void hurt() {
         vies--;
     }
+    //Returns the positions
     public int x() {
         return x;
     }
     public int y() {
         return y;
     }
+    //Set the x positions of the character
     public void setX(int k) {
         x = k;
         history.add(new Point(x, y));
     }
+    //Set the y position of the character
     public void setY(int k) {
         y = k;
         history.add(new Point(x, y));
     }
+
+    //Add distance to X position
     public void addX(int k) {
         setX(x + k);
     }
+    //Add distance to Y position
     public void addY(int k) {
         setY(y + k);
     }
+    //Draw
     public void dessine(Graphics2D g2, double sqSize) {
         
         double paddingSize = (double)sqSize/2;

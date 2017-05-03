@@ -15,6 +15,7 @@ import static labyrinthe.Helper.getFloodFillRelative;
  *
  * @author bowen
  */
+//Flood fill for AI
 public class AIFloodFill implements AI {
     private int direction; //0N, 1E, 2S, 3W
     

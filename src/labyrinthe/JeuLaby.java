@@ -24,6 +24,8 @@ public class JeuLaby {
         for (DisplayMode mode : dms) {
             System.out.println(mode.getWidth() + " x " + mode.getHeight() + " " + mode.getBitDepth() + "b @" + mode.getRefreshRate());
         }*/
+
+
         int width = gd.getDisplayMode().getWidth();
         int height = gd.getDisplayMode().getHeight();
         int defaultW = width*9/10;

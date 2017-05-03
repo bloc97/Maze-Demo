@@ -11,20 +11,21 @@ import java.util.Iterator;
  *
  * @author bowen
  */
+//Iterator to parse through all of the nodes
 public class IteratorMuret implements Iterator<Muret> {
-    
+    //Declare the node attribute
     private NoeudMuret node;
-    
+    //Assign the node to the first node
     public IteratorMuret(NoeudMuret premier) {
         node = premier;
     }
     
-    @Override
+    //Check if it has a next Node
     public boolean hasNext() {
         return node != null;
     }
 
-    @Override
+    //Goto next node
     public Muret next() {
         Muret mur = node.get();
         node = node.next();

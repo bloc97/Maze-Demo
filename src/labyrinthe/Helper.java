@@ -14,8 +14,10 @@ import java.awt.geom.AffineTransform;
  *
  * @author bowen
  */
+//Helper class
 public abstract class Helper {
-    
+
+    //Print out the filled region
     public static void printFill(boolean[][] grid) {
         for (int y=0; y<grid[0].length; y++) {
             for (int x=0; x<grid.length; x++) {
@@ -24,6 +26,7 @@ public abstract class Helper {
             System.out.println("");
         }
     }
+    //return the fill size available
     public static int getFillSize(boolean[][] grid) {
         int total = 0;
         for (int x=0; x<grid.length; x++) {
@@ -35,6 +38,7 @@ public abstract class Helper {
         }
         return total;
     }
+    //Flood fill relative to a position
     public static boolean[][] getFloodFillRelative(int x, int y, int direction, int w, int h, ListeMuret murs) {
         boolean[][] grid = new boolean[w][h];
         grid[x][y] = true;
@@ -57,11 +61,14 @@ public abstract class Helper {
         }
         return grid;
     }
+    //get the flooded grid
     public static boolean[][] getFloodFill(int x, int y, int w, int h, ListeMuret murs) {
         boolean[][] grid = new boolean[w][h];
         recursiveFloodFill(x, y, grid, murs);
         return grid;
     }
+
+    //fill recursively
     public static void recursiveFloodFill(int x, int y, boolean[][] grid, ListeMuret murs) {
         if (x < 0 || x >= grid.length || y < 0 || y >= grid[0].length) {
             return;
@@ -84,10 +91,12 @@ public abstract class Helper {
         }
         
     }
+    //Check if movable
     public static boolean canDeplace(int x, int y, char cardinalDirection, ListeMuret murs) {
         return (murs.chercheMuret(x, y, cardinalDirection) == null);
     }
 
+    //return a random  between some min and max range
     public static int randomRange(int min, int max) {
         int range = (max - min) + 1;
         return (int) (Math.random() * range) + min;
