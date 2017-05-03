@@ -27,7 +27,7 @@ public class Labyrinthe {
     private int waitms;
     private boolean doAnim;
     
-    private int aiDelay;
+    //private int aiDelay;
     private int aiAnimDelay;
     
     private Personnage pers;
@@ -49,7 +49,7 @@ public class Labyrinthe {
     
     private boolean hasGameEnded = false;
     
-    private Timer aiTimer;
+    //private Timer aiTimer;
 
     //Constructor with 5 params: Lenght,height,density, time and number of lives
     public Labyrinthe(int w, int h, JPanelLaby affichage, float density, GeneratorType type, long delayms, int lives, int waitms, boolean doAnim, AIType aiType, int aiDelay, int aiAnimDelay, boolean isAIenabled, boolean automaticRestart) {
@@ -63,7 +63,7 @@ public class Labyrinthe {
         this.doAnim = doAnim;
         this.initialLives = lives;
         this.aiType = aiType;
-        this.aiDelay = aiDelay;
+        //this.aiDelay = aiDelay;
         this.aiAnimDelay = aiAnimDelay;
         this.isAIenabled = isAIenabled;
         this.automaticRestart = automaticRestart;
@@ -72,9 +72,6 @@ public class Labyrinthe {
     public void generate() {
         System.out.println("Initialising Maze...");
         isGenerating = true;
-        if (aiTimer instanceof Timer) {
-            aiTimer.stop();
-        }
         ai = null;
         murs = new ListeMuret();
         int[] pos;
@@ -107,20 +104,10 @@ public class Labyrinthe {
         winX = (sortie.isHorz) ? sortie.x : sortie.x-1;
         winY = (sortie.isHorz) ? sortie.y-1 : sortie.y;
         ai = AI.getNewAI(aiType);
-        isGenerating = false;
         
-        aiTimer = new Timer(aiDelay, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (isAIenabled) {
-                    stepAI();
-                    affichage.repaint();
-                }
-            }
-        });
         
         if (isAIenabled) {
-            enableAI();
+            isGenerating = false;
         } else {
             startHideTimer();
         }
@@ -138,7 +125,6 @@ public class Labyrinthe {
     }
     
     public void purge() {
-        disableAI();
         purgeAI();
         disableRestart();
         isGenerating = true;
@@ -151,10 +137,11 @@ public class Labyrinthe {
         Timer hideTimer = new Timer((int)delayms, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (isAIenabled || hasGameEnded || isGenerating) {
+                if (isAIenabled || hasGameEnded) {
                 } else {
                     murs.hide();
                 }
+                isGenerating = false;
             }
         });
         hideTimer.setInitialDelay((int)delayms);
@@ -173,18 +160,11 @@ public class Labyrinthe {
             ai = AI.getNewAI(aiType);
             murs.show();
             if (isAIenabled) {
-                enableAI();
             } else {
                 startHideTimer();
             }
         }
         hasGameEnded = false;
-    }
-    public void setAIDelay(int aiDelay) {
-        this.aiDelay = aiDelay;
-        if (aiTimer instanceof Timer) {
-            aiTimer.setDelay(aiDelay);
-        }
     }
     public void setAIAnimDelay(int aiAnimDelay) {
         this.aiAnimDelay = aiAnimDelay;
@@ -195,20 +175,27 @@ public class Labyrinthe {
     public void disableRestart() {
         automaticRestart = false;
     }
-    public void enableAI() {
+    public void showWalls() {
         if (isGenerating) {
             return;
         }
-        isAIenabled = true;
         murs.show();
-        aiTimer.start();
+    }
+    public void hideWalls() {
+        if (isGenerating) {
+            return;
+        }
+        murs.show();
+    }
+    public void enableAI() {
+        isAIenabled = true;
+        showWalls();
     }
     public void disableAI() {
         if (isGenerating) {
             return;
         }
         isAIenabled = false;
-        aiTimer.stop();
     }
     public boolean isAIenabled() {
         return isAIenabled;
@@ -311,7 +298,6 @@ public class Labyrinthe {
                         reset();
                         break;
                     case 1:
-                        disableAI();
                         affichage.queueGenerateNewMaze();
                         break;
                     case 2:
@@ -325,13 +311,11 @@ public class Labyrinthe {
         if (pers.x() == winX && pers.y() == winY) {
             hasGameEnded = true;
             if (automaticRestart) {
-                disableAI();
                 affichage.queueGenerateNewMaze();
             } else {
                 int choice = JOptionPane.showConfirmDialog(null, "You won! Do you want to start a new maze?", "Victory", JOptionPane.YES_NO_OPTION);
                 switch (choice) {
                     case 0:
-                        disableAI();
                         affichage.queueGenerateNewMaze();
                         break;
                     case 1:

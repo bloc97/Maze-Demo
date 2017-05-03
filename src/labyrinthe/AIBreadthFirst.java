@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import static java.lang.Thread.sleep;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,76 +26,73 @@ import static labyrinthe.Helper.isVisited;
  *
  * @author bowen
  */
-public class AIDepthFirst implements AI {
+public class AIBreadthFirst implements AI {
     private boolean[][] visited;
+    private boolean[][] examined;
     private LinkedList<Integer> directionPath;
     private int x, y, dir;
     private int winX, winY;
     
     private boolean foundPath = false;
     
-    public AIDepthFirst() {
+    public AIBreadthFirst() {
     }
     
     
     public void getPath(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage, int animWait) {
         
         visited = new boolean[w][h];
-        LinkedList<Point> stack = new LinkedList<>();
+        examined = new boolean[w][h];
+        LinkedList<Point> queue = new LinkedList<>();
+        LinkedList<LinkedList<Integer>> pathQueue = new LinkedList<>();
         directionPath = new LinkedList<>();
-        
-        visited[x][y] = true;
         
         winX = (sortie.isHorz) ? sortie.x : sortie.x-1;
         winY = (sortie.isHorz) ? sortie.y-1 : sortie.y;
         
-        Point currentPoint = new Point(x, y);
+        Point startPoint = new Point(x, y);
+        LinkedList<Integer> startPath = new LinkedList<>();
         
-        while (hasUnvisited(visited)) {
+        pathQueue.addFirst(startPath);
+        queue.addFirst(startPoint);
+        
+        while (queue.size() > 0) {
+            Point currentPoint = queue.removeLast();
+            LinkedList<Integer> currentPath = pathQueue.removeLast();
             x = currentPoint.x;
             y = currentPoint.y;
             
-            LinkedList<Integer> unvisitedDirections = new LinkedList<>();
-            for (int i=0; i<4; i++) {
-                if (!isVisited(x, y, i, visited) && canMove(i, x, y, w, h, murs)) {
-                    unvisitedDirections.push(i);
-                }
+            try {
+                affichage.repaint();
+                sleep(animWait);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
             }
-            affichage.repaint();
             
-            if (unvisitedDirections.size() > 0) {
-                
-                int direction = unvisitedDirections.getFirst();
-                stack.push(currentPoint);
-                directionPath.addLast(direction);
-                
-                Point newPoint = getPointFromDirection(x, y, direction);
-                visited[newPoint.x][newPoint.y] = true;
-                currentPoint = newPoint;
-                
-                try {
-                    affichage.repaint();
-                    sleep(animWait);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                
-                if (currentPoint.x == winX && currentPoint.y == winY) {
-                    foundPath = true;
-                    return;
-                }
-                
-            } else if (stack.size() > 0) {
-                currentPoint = stack.pop();
-                directionPath.removeLast();
+            if (x == winX && y == winY) {
+                directionPath = currentPath;
+                foundPath = true;
+                return;
             } else {
-                throw new IllegalStateException("Illegal Pathfinding State!");
+                
+                for (int i=0; i<4; i++) {
+                    if (!isVisited(x, y, i, visited) && canMove(i, x, y, w, h, murs)) {
+                        Point newPoint = Helper.getPointFromDirection(x, y, i);
+                        visited[newPoint.x][newPoint.y] = true;
+                        LinkedList<Integer> newPath = (LinkedList<Integer>)currentPath.clone();
+                        newPath.add(i);
+                        pathQueue.addFirst(newPath);
+                        queue.addFirst(newPoint);
+                    }
+                }
+                visited[x][y] = true;
+                examined[x][y] = true;
+                
             }
+            
+            
             
         }
-        
-        
-        
         
     }
     
@@ -146,8 +144,8 @@ public class AIDepthFirst implements AI {
                         break;
             }
         }
-        LinkedList<Integer> directionPathClone = (LinkedList<Integer>)directionPath.clone();
-        for (int d : directionPathClone) {
+            
+        for (int d : directionPath) {
             switch(d) {
                     case 0:
                         g2.draw(createArrow(new Point((int)((ix+1+0.5f)*sqSize), (int)((iy+1+0.8f)*sqSize)), new Point((int)((ix+1+0.5f)*sqSize), (int)((iy+1+0.2f)*sqSize))));

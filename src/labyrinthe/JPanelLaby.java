@@ -36,6 +36,7 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -82,6 +83,7 @@ public class JPanelLaby extends JPanel implements Runnable {
     private float density3 = 1f;
     
     private boolean generateMazeNext = true;
+    
 
     //Constructor
     public JPanelLaby(int xsize, int ysize, int w, int h, float density, GeneratorType type, long delayms, int lives, int waitms, AIType aiType) {
@@ -185,8 +187,32 @@ public class JPanelLaby extends JPanel implements Runnable {
         JLabel aiLabel = new JLabel("AI Type: ");
         aiLabel.setFont(new Font("Arial", Font.BOLD, 14));
         
-        JComboBox<String> aiCombo = new JComboBox(new String[] {"Naive Wall Follow","Greedy + Flood Fill","Depth-First", "Etc"});
-        aiCombo.setSelectedIndex(1);
+        JComboBox<String> aiCombo = new JComboBox(new String[] {"Naive Wall Follow","Wall + Pledge","Wall + Memory","Wall + Memory + Pledge","Greedy + Flood Fill","Depth-First", "Breadth-First"});
+        
+        switch (aiType) {
+            case NAIVEWALL:
+                aiCombo.setSelectedIndex(0);
+                break;
+            case PLEDGEWALL:
+                aiCombo.setSelectedIndex(1);
+                break;
+            case MEMORYWALL:
+                aiCombo.setSelectedIndex(2);
+                break;
+            case PMWALL:
+                aiCombo.setSelectedIndex(3);
+                break;
+            case GREEDYFILL:
+                aiCombo.setSelectedIndex(4);
+                break;
+            case DEPTHFIRST:
+                aiCombo.setSelectedIndex(5);
+                break;
+            case BREADTHFIRST:
+                aiCombo.setSelectedIndex(6);
+                break;
+        }
+        
         
         JSlider aiSpeedSlider = new JSlider(0, 1000, (aiMovementDelay>1000) ? 0 : 1000-aiMovementDelay);
         JSlider aiAnimSlider = new JSlider(0, 100, (aiAnimationDelay>100) ? 0 : 100-aiAnimationDelay);
@@ -276,7 +302,7 @@ public class JPanelLaby extends JPanel implements Runnable {
             @Override
             public void stateChanged(ChangeEvent e) {
                 aiMovementDelay = 1000-aiSpeedSlider.getValue();
-                affichageLaby.labyrinthe().setAIDelay(aiMovementDelay);
+                
             }
         });
         aiAnimSlider.addChangeListener(new ChangeListener() {
@@ -331,6 +357,35 @@ public class JPanelLaby extends JPanel implements Runnable {
                     heightField.setValue(h);
                 }
                 generateMazeNext = true;
+            }
+        });
+        
+        aiCombo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                switch (aiCombo.getSelectedIndex()) {
+                    case 0:
+                        aiType = AIType.NAIVEWALL;
+                        break;
+                    case 1:
+                        aiType = AIType.PLEDGEWALL;
+                        break;
+                    case 2:
+                        aiType = AIType.MEMORYWALL;
+                        break;
+                    case 3:
+                        aiType = AIType.PMWALL;
+                        break;
+                    case 4:
+                        aiType = AIType.GREEDYFILL;
+                        break;
+                    case 5:
+                        aiType = AIType.DEPTHFIRST;
+                        break;
+                    case 6:
+                        aiType = AIType.BREADTHFIRST;
+                        break;
+                }
             }
         });
         enableAICheck.addItemListener(new ItemListener() {
@@ -523,9 +578,9 @@ public class JPanelLaby extends JPanel implements Runnable {
                         affichageLaby.labyrinthe().deplace('D');
                         affichageLaby.labyrinthe().purgeAI();
                         break;
-                    case ' ':
-                        affichageLaby.labyrinthe().stepAI();
-                        break;
+                    //case ' ':
+                        //affichageLaby.labyrinthe().stepAI();
+                        //break;
                 }
                 //System.out.println(e.getKeyChar());
                 repaint();
@@ -568,13 +623,18 @@ public class JPanelLaby extends JPanel implements Runnable {
     @Override
     public void run() { //Repaint each second to prevent grayscreen bug
         while (true) {
+            
+            
             try {
                 updateUI();
                 repaint();
                 if (generateMazeNext) {
                     generateNewMaze();
                 }
-                sleep(500);
+                if (isAIEnabled) {
+                    affichageLaby.labyrinthe().stepAI();
+                }
+                sleep((aiMovementDelay < 10) ? 10 : aiMovementDelay);
             } catch (InterruptedException ex) {
                 Logger.getLogger(JPanelLaby.class.getName()).log(Level.SEVERE, null, ex);
             }

@@ -14,11 +14,29 @@ import javax.swing.JComponent;
  */
 public interface AI {
     public enum AIType {
-        NAIVEWALL, GREEDYFILL, DEADENDFILL, DEPTHFIRST, BREADTHFIRST, DIJKSTRA, ASTAR, 
+        NAIVEWALL, MEMORYWALL, PLEDGEWALL, PMWALL, GREEDYFILL, DEPTHFIRST, BREADTHFIRST
+        //DEAD end Fill, DIJKSTRA, ASTAR
     }
     
     public static AI getNewAI(AIType type) {
-        return new AIDepthFirst();
+        switch (type) {
+            case NAIVEWALL:
+                return new AITurn();
+            case MEMORYWALL:
+                return new AITurn(true);
+            case PLEDGEWALL:
+                return new AITurn(false, true);
+            case PMWALL:
+                return new AITurn(true, true);
+            case GREEDYFILL:
+                return new AIGreedyFloodFill();
+            case DEPTHFIRST:
+                return new AIDepthFirst();
+            case BREADTHFIRST:
+                return new AIBreadthFirst();
+            default :
+                return new AIGreedyFloodFill();
+        }
     }
     
     public char getNextDirection(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage, int animWait);

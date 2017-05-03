@@ -87,6 +87,12 @@ public class AffichageLaby extends JComponent {
             return;
         }
         
+        if (laby.ai() != null) {
+            if (laby.isAIenabled()) {
+                laby.ai().paint(g2, sqSize);
+            }
+        }
+        
         //Stroke lastStroke = g2.getStroke();
         
         float wallWidth = (float)sqSize/10;
@@ -146,15 +152,16 @@ public class AffichageLaby extends JComponent {
         //g2.setStroke(lastStroke);
         laby.personnage().dessine(g2, sqSize);
         g2.setColor(Color.yellow);
-        for (int i=0; i<laby.personnage().vies(); i++) {
-            g2.fill(createLos(new Point((int)((i+1.2f)*sqSize), (int)((0.5)*sqSize)), new Point((int)((i+2.2f)*sqSize), (int)((0.5)*sqSize))));
+        if (laby.isAIenabled()) {
+            g2.setFont(new Font("Courier", Font.BOLD, (int)(sqSize/1.5f)));
+            g2.drawString("AI ENABLED", (int)sqSize, (int)sqSize*(0.8f));
+        } else {
+            for (int i=0; i<laby.personnage().vies(); i++) {
+                g2.fill(createLos(new Point((int)((i+1.2f)*sqSize), (int)((0.5)*sqSize)), new Point((int)((i+2.2f)*sqSize), (int)((0.5)*sqSize))));
+            }
         }
         //g2.drawString("Vies: " + laby.personnage().vies(), 20, 20);
         
-        if (laby.ai() == null) {
-            return;
-        }
-        laby.ai().paint(g2, sqSize);
         
         
     };

@@ -13,8 +13,11 @@ import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
+import static java.lang.Thread.sleep;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JComponent;
 import static labyrinthe.Helper.canDeplace;
 import static labyrinthe.Helper.canMove;
@@ -30,7 +33,6 @@ public class AIGreedyFloodFill implements AI {
     private int direction; //0N, 1E, 2S, 3W
     private int[][] visited;
     
-    private Point fillingPoint;
     private boolean[][] fillingBoard;
     
     public AIGreedyFloodFill() {
@@ -130,7 +132,16 @@ public class AIGreedyFloodFill implements AI {
         boolean canMoveRight = canMove(direction+1, x, y, w, h, murs);
         
         if (canMoveForward && !canMoveLeft && !canMoveRight) {
-            if (getFloodFillRelative(x, y, direction, w, h, murs)[exitX][exitY]) {
+            fillingBoard = getFloodFillRelative(x, y, direction, w, h, murs);
+            
+            try {
+                affichage.repaint();
+                sleep(animWait);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            if (fillingBoard[exitX][exitY]) {
                 visited[x][y] = direction; //Prevent walking back and forth in the same location
                 return directionToChar(direction);
             }
@@ -143,7 +154,9 @@ public class AIGreedyFloodFill implements AI {
         for (int i=0; i<4; i++) {
             if (canMove(i, x, y, w, h, murs)) {
                 double newScore = distanceScore(i, x, y, sortie);
-                if (getFloodFillRelative(x, y, i, w, h, murs)[exitX][exitY]) {
+                boolean[][] tempFillingBoard = getFloodFillRelative(x, y, i, w, h, murs);
+                if (tempFillingBoard[exitX][exitY]) {
+                    fillingBoard = tempFillingBoard;
                     if (newScore < minScore && visited[x][y] != i) {
                         minScore = newScore;
                         optimalSolutions.add(i);
@@ -151,7 +164,15 @@ public class AIGreedyFloodFill implements AI {
                         otherSolutions.add(i);
                     }
                 }
+                
             }
+        }
+        
+        try {
+            affichage.repaint();
+            sleep(animWait);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         if (optimalSolutions.size() > 0) {
@@ -175,8 +196,20 @@ public class AIGreedyFloodFill implements AI {
         if (visited == null || g2 == null) {
             return;
         }
-        g2.setColor(Color.CYAN);
+        
+        g2.setColor(new Color(20, 90, 120));
         g2.setStroke(new BasicStroke(2));
+        if (fillingBoard != null) {
+            for (int x=0; x<visited.length; x++) {
+                for (int y=0; y<visited[0].length; y++) {
+                    if(fillingBoard[x][y]) {
+                        g2.fillRect((int)((x+1)*sqSize), (int)((y+1)*sqSize), (int)sqSize, (int)sqSize);
+                        //g2.draw(createArrow(new Point((int)((x+1+0.5f)*sqSize), (int)((y+1+0.8f)*sqSize)), new Point((int)((x+1+0.5f)*sqSize), (int)((y+1+0.2f)*sqSize))));
+                    }
+                }
+            }
+        }
+        g2.setColor(Color.CYAN);
         for (int x=0; x<visited.length; x++) {
             for (int y=0; y<visited[0].length; y++) {
                 /*
