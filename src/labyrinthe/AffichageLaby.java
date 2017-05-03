@@ -8,13 +8,16 @@ package labyrinthe;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import javax.swing.JComponent;
+import static labyrinthe.Helper.createLos;
 
 /**
  *
@@ -130,10 +133,12 @@ public class AffichageLaby extends JComponent {
             }
         }
         
-        if (laby.ai() == null) {
-            return;
+        if (laby.isGenerating()) {
+            g2.setColor(Color.RED);
+            g2.setFont(new Font("Courier", Font.BOLD, (int)(sqSize/1.5f)));
+            g2.drawString("Please Wait...", (int)sqSize, (int)sqSize*(laby.h()+1.8f));
         }
-        laby.ai().paint(g2, sqSize);
+        
         
         if (laby.personnage() == null || laby.sortie() == null) {
             return;
@@ -141,8 +146,15 @@ public class AffichageLaby extends JComponent {
         //g2.setStroke(lastStroke);
         laby.personnage().dessine(g2, sqSize);
         g2.setColor(Color.yellow);
-        g2.drawString("Vies: " + laby.personnage().vies(), 20, 20);
+        for (int i=0; i<laby.personnage().vies(); i++) {
+            g2.fill(createLos(new Point((int)((i+1.2f)*sqSize), (int)((0.5)*sqSize)), new Point((int)((i+2.2f)*sqSize), (int)((0.5)*sqSize))));
+        }
+        //g2.drawString("Vies: " + laby.personnage().vies(), 20, 20);
         
+        if (laby.ai() == null) {
+            return;
+        }
+        laby.ai().paint(g2, sqSize);
         
         
     };

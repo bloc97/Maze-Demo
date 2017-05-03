@@ -182,7 +182,7 @@ public class AIGreedyFloodFill implements AI {
 
     @Override
     public void paint(Graphics2D g2, double sqSize) {
-        if (visited == null) {
+        if (visited == null || g2 == null) {
             return;
         }
         g2.setColor(Color.CYAN);

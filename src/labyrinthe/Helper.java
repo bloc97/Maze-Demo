@@ -139,6 +139,29 @@ public abstract class Helper {
 
         return transform.createTransformedShape(arrow);
     }
+    
+    public static Shape createLos(Point p0, Point p1) {
+        Polygon los = new Polygon();
+        los.addPoint(-1,-1);
+        los.addPoint(-2,1);
+        los.addPoint(2,1);
+        los.addPoint(3,-1);
+        los.addPoint(-1,-1);
+
+
+        Point midPoint = new Point((int)((p0.x + p1.x)/2.0), (int)((p0.y + p1.y)/2.0));
+
+        double rotate = Math.atan2(p1.y - p0.y, p1.x - p0.x);
+
+        AffineTransform transform = new AffineTransform();
+        transform.translate(midPoint.x, midPoint.y);
+        double ptDistance = p0.distance(p1);
+        double scale = ptDistance / 5;
+        transform.scale(scale, scale);
+        transform.rotate(rotate+Math.PI);
+
+        return transform.createTransformedShape(los);
+    }
 
     public static Muret getMuretFromDirection(int x, int y, int d) {
         switch (d) {

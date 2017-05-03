@@ -32,11 +32,9 @@ public abstract class RandomGenerators {
         NAIVEUNIFORM, RECURSIVE, DEPTHFIRST, PRIM;
     }
     
-    public static void uniformGenerateWalls(int w, int h, float density, ListeMuret liste, JComponent affichage, double seconds) { //Naive uniform generation
+    public static void uniformGenerateWalls(int w, int h, float density, ListeMuret liste, JComponent affichage, int waitms, boolean doAnim) { //Naive uniform generation
         System.out.println("Generating World...");
         
-        int total = w*2;
-        int sleepTimeMs = (int)(seconds*1000)/total;
         
         for (int x=0; x<w; x++) { //Murets horizontaux
             for (int y=0; y<=h; y++) {
@@ -50,7 +48,7 @@ public abstract class RandomGenerators {
             }
             try {
                 affichage.repaint();
-                sleep(sleepTimeMs);
+                sleep(waitms);
             } catch (InterruptedException ex) {
                 Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -58,7 +56,7 @@ public abstract class RandomGenerators {
         
         for (int x=0; x<=w; x++) { //Murets verticaux
             for (int y=0; y<h; y++) {
-                if (x == 0 || x == h) {
+                if (x == 0 || x == w) {
                     liste.push(new Muret(x, y, false));
                 } else {
                     if (Math.random() < density) {
@@ -69,7 +67,7 @@ public abstract class RandomGenerators {
             
             try {
                 affichage.repaint();
-                sleep(sleepTimeMs);
+                sleep(waitms);
             } catch (InterruptedException ex) {
                 Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -78,12 +76,9 @@ public abstract class RandomGenerators {
         
     }
     
-    public static void recursiveGenerateWalls(int w, int h, float density, ListeMuret liste, JComponent affichage, double seconds) { //Recursive generation, separate the maze in two recursively until the separation is smaller than 1.
+    public static void recursiveGenerateWalls(int w, int h, float density, ListeMuret liste, JComponent affichage, int waitms, boolean doAnim) { //Recursive generation, separate the maze in two recursively until the separation is smaller than 1.
         System.out.println("Generating World...");
         
-        int total = w*h;
-        int sleepTimeMs = (int)(seconds*1000)/total;
-        int sleepTimeNs = (int)(((seconds*1000/total) - sleepTimeMs)*1000000);
         
         for (int i=0; i<w; i++) { //Murs horizontaux
             liste.push(new Muret(i, 0, true));
@@ -94,12 +89,12 @@ public abstract class RandomGenerators {
             liste.push(new Muret(w, i, false));
         }
         
-        rGenW(0, 0, w, h, density, liste, affichage, sleepTimeMs, sleepTimeNs);
+        rGenW(0, 0, w, h, density, liste, affichage, waitms, doAnim);
         
         System.out.println("Done.");
         
     }
-    private static void rGenW(int x0, int y0, int x1, int y1, float density, ListeMuret liste, JComponent affichage, long sleepTimeMs, int sleepTimeNs) {
+    private static void rGenW(int x0, int y0, int x1, int y1, float density, ListeMuret liste, JComponent affichage, int waitms, boolean doAnim) {
         
         if (x1-x0 <= 1 || y1-y0 <= 1) {
             return;
@@ -151,15 +146,18 @@ public abstract class RandomGenerators {
                     liste.push(new Muret(i, randY, true));
                 }
             }*/
-            try {
-                affichage.repaint();
-                sleep(sleepTimeMs, sleepTimeNs);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
+
+            if (doAnim) {
+                try {
+                    affichage.repaint();
+                    sleep(waitms);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
             
-            rGenW(x0, y0, x1, randY, density, liste, affichage, sleepTimeMs, sleepTimeNs);
-            rGenW(x0, randY, x1, y1, density, liste, affichage, sleepTimeMs, sleepTimeNs);
+            rGenW(x0, y0, x1, randY, density, liste, affichage, waitms, doAnim);
+            rGenW(x0, randY, x1, y1, density, liste, affichage, waitms, doAnim);
             
         } else {
             
@@ -197,15 +195,18 @@ public abstract class RandomGenerators {
                     liste.push(new Muret(randX, i, false));
                 }
             }*/
-            try {
-                affichage.repaint();
-                sleep(sleepTimeMs, sleepTimeNs);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
+
+            if (doAnim) {
+                try {
+                    affichage.repaint();
+                    sleep(waitms);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
             
-            rGenW(x0, y0, randX, y1, density, liste, affichage, sleepTimeMs, sleepTimeNs);
-            rGenW(randX, y0, x1, y1, density, liste, affichage, sleepTimeMs, sleepTimeNs);
+            rGenW(x0, y0, randX, y1, density, liste, affichage, waitms, doAnim);
+            rGenW(randX, y0, x1, y1, density, liste, affichage, waitms, doAnim);
             
         }
         
@@ -214,25 +215,19 @@ public abstract class RandomGenerators {
     }
     
     
-    public static void depthFirstGenerateWalls(int w, int h, float density, ListeMuret liste, JComponent affichage, double seconds) { //Recursive generation, separate the maze in two recursively until the separation is smaller than 1.
+    public static void depthFirstGenerateWalls(int w, int h, float density, ListeMuret liste, JComponent affichage, int waitms, boolean doAnim) { //Recursive generation, separate the maze in two recursively until the separation is smaller than 1.
         System.out.println("Generating World...");
-        
-        int total = w*h;
-        int sleepTimeMs = (int)(seconds*1000)/total;
-        int sleepTimeNs = (int)(((seconds*1000/total) - sleepTimeMs)*1000000);
         
         fillWallsHide(w, h, liste);
         
         //dFrGenW(randomRange(0, w-1), randomRange(0, h-1), new boolean[w][h], liste, affichage, sleepTimeMs, sleepTimeNs);
-        dFGenW(w, h, density, liste, affichage, sleepTimeMs, sleepTimeNs);
-        
-        
+        dFGenW(w, h, density, liste, affichage, waitms, doAnim);
         
         
         System.out.println("Done.");
         
     }
-    private static void dFGenW(int w, int h, float density, ListeMuret liste, JComponent affichage, long sleepTimeMs, int sleepTimeNs) { //Iterative version, longer but no stack overflow.
+    private static void dFGenW(int w, int h, float density, ListeMuret liste, JComponent affichage, int waitms, boolean doAnim) { //Iterative version, longer but no stack overflow.
         
         boolean[][] visited = new boolean[w][h];
         
@@ -253,8 +248,10 @@ public abstract class RandomGenerators {
                 Muret trouveMuret = liste.chercheMuret(x, y, i);
                 if (trouveMuret instanceof Muret) trouveMuret.show();
             }
+
             
             if (unvisitedDirections.size() > 0) {
+                
                 Collections.shuffle(unvisitedDirections);
                 int direction = unvisitedDirections.getFirst();
                 stack.push(currentPoint);
@@ -273,21 +270,24 @@ public abstract class RandomGenerators {
                 visited[newPoint.x][newPoint.y] = true;
                 currentPoint = newPoint;
                 
+                if (doAnim) {
+                    try {
+                        affichage.repaint();
+                        sleep(waitms);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                
             } else if (stack.size() > 0) {
                 currentPoint = stack.pop();
-                try {
-                    affichage.repaint();
-                    sleep(sleepTimeMs, sleepTimeNs);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
-                }
             } else {
                 return;
             }
             
         }
     }
-    private static void dFrGenW(int x, int y, boolean[][] visited, ListeMuret liste, JComponent affichage, long sleepTimeMs, int sleepTimeNs) { //Recursive version, stack overflows!
+    private static void dFrGenW(int x, int y, boolean[][] visited, ListeMuret liste, JComponent affichage, int waitms, boolean doAnim) { //Recursive version, stack overflows!
         visited[x][y] = true;
         
         LinkedList<Integer> directions = new LinkedList<>();
@@ -303,15 +303,17 @@ public abstract class RandomGenerators {
                 //System.out.println(x + " " + y + " " + i);
                 liste.remove(Helper.getMuretFromDirection(x, y, i));
                 
-                try {
-                    affichage.repaint();
-                    sleep(sleepTimeMs, sleepTimeNs);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
+                if (doAnim) {
+                    try {
+                        affichage.repaint();
+                        sleep(waitms);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
                 
                 Point newPoint = Helper.getPointFromDirection(x, y, i);
-                dFrGenW(newPoint.x, newPoint.y, visited, liste, affichage, sleepTimeMs, sleepTimeNs);
+                dFrGenW(newPoint.x, newPoint.y, visited, liste, affichage, waitms, doAnim);
             }
         }
         return;
@@ -319,12 +321,8 @@ public abstract class RandomGenerators {
     }
     
     
-    public static void primGenerateWalls(int w, int h, float density, ListeMuret liste, JComponent affichage, double seconds) {
+    public static void primGenerateWalls(int w, int h, float density, ListeMuret liste, JComponent affichage, int waitms, boolean doAnim) {
         System.out.println("Generating World...");
-        
-        int total = w*h*4;
-        int sleepTimeMs = (int)(seconds*1000)/total;
-        int sleepTimeNs = (int)(((seconds*1000/total) - sleepTimeMs)*1000000);
         
         fillWallsHide(w, h, liste);
         
@@ -337,7 +335,9 @@ public abstract class RandomGenerators {
         for (int i=0; i<4; i++) {
             Muret mur = liste.chercheMuret(x0, y0, i);
             if (mur instanceof Muret) {
-                mur.show();
+                if (Math.random() < density) {
+                    mur.show();
+                }
                 wallList.push(mur);
             }
         }
@@ -357,7 +357,9 @@ public abstract class RandomGenerators {
                         for (int i=0; i<4; i++) {
                             Muret newMur = liste.chercheMuret(mur.x, mur.y, i);
                             if (newMur instanceof Muret) {
-                                newMur.show();
+                                if (Math.random() < density) {
+                                    newMur.show();
+                                }
                                 wallList.push(newMur);
                             }
                         }
@@ -366,7 +368,9 @@ public abstract class RandomGenerators {
                         for (int i=0; i<4; i++) {
                             Muret newMur = liste.chercheMuret(mur.x, mur.y-1, i);
                             if (newMur instanceof Muret) {
-                                newMur.show();
+                                if (Math.random() < density) {
+                                    newMur.show();
+                                }
                                 wallList.push(newMur);
                             }
                         }
@@ -384,7 +388,9 @@ public abstract class RandomGenerators {
                         for (int i=0; i<4; i++) {
                             Muret newMur = liste.chercheMuret(mur.x, mur.y, i);
                             if (newMur instanceof Muret) {
-                                newMur.show();
+                                if (Math.random() < density) {
+                                    newMur.show();
+                                }
                                 wallList.push(newMur);
                             }
                         }
@@ -393,7 +399,9 @@ public abstract class RandomGenerators {
                         for (int i=0; i<4; i++) {
                             Muret newMur = liste.chercheMuret(mur.x-1, mur.y, i);
                             if (newMur instanceof Muret) {
-                                newMur.show();
+                                if (Math.random() < density) {
+                                    newMur.show();
+                                }
                                 wallList.push(newMur);
                             }
                         }
@@ -403,15 +411,28 @@ public abstract class RandomGenerators {
                 }
             }
             
-
-            try {
-                affichage.repaint();
-                sleep(sleepTimeMs, sleepTimeNs);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
+            if (doAnim) {
+                try {
+                    affichage.repaint();
+                    sleep(waitms);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
 
             
+        }
+        LinkedList<Muret> invisibleMurs = new LinkedList<>();
+        
+        for (Muret mur : liste) {
+            if (mur instanceof Muret) {
+                if (!mur.visible()) {
+                    invisibleMurs.push(mur);
+                }
+            }
+        }
+        for (Muret invMur : invisibleMurs) {
+            liste.remove(invMur);
         }
         
         
@@ -458,7 +479,7 @@ public abstract class RandomGenerators {
         int maxExitProgress = h/2 + w/2;
         int exitProgress = 0;
         
-        int acceptableFillSize = (h*w)/4;
+        int acceptableFillSize = (h*w)/8;
         
         //for (int i=h/2; i<h; i++) { //Right side openings
         for (int i=w-1; i>=w/2; i--) { //Bottom side openings

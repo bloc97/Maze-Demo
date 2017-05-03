@@ -17,6 +17,10 @@ public interface AI {
         NAIVEWALL, GREEDYFILL, DEADENDFILL, DEPTHFIRST, BREADTHFIRST, DIJKSTRA, ASTAR, 
     }
     
+    public static AI getNewAI(AIType type) {
+        return new AIGreedyFloodFill();
+    }
+    
     public char getNextDirection(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage);
     public void paint(Graphics2D g2, double sqSize);
 }

@@ -8,6 +8,7 @@ package labyrinthe;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import javax.swing.JComboBox;
+import labyrinthe.AI.AIType;
 import labyrinthe.RandomGenerators.GeneratorType;
 
 /**
@@ -26,21 +27,25 @@ public class JeuLaby {
         for (DisplayMode mode : dms) {
             System.out.println(mode.getWidth() + " x " + mode.getHeight() + " " + mode.getBitDepth() + "b @" + mode.getRefreshRate());
         }*/
-
+        float density = 0.5f;
+        int l = 20;
+        int h = 20;
+        long delayms = 1000l;
+        int lives = 5;
+        
+        
+        
 
         int width = gd.getDisplayMode().getWidth();
         int height = gd.getDisplayMode().getHeight();
         int defaultW = width*9/10;
         int defaultH = height*9/10;
         JFrameLaby frame = new JFrameLaby(defaultW, defaultH);
-        JPanelLaby panel = new JPanelLaby(defaultW, defaultH);
+        JPanelLaby panel = new JPanelLaby(defaultW, defaultH, l, h, density, GeneratorType.NAIVEUNIFORM, delayms, lives, 10, true, AIType.GREEDYFILL, 100);
         frame.add(panel);
         panel.setFocusable(true);
-        //panel.launch();
-        JComboBox<String> myCombo = new JComboBox(new String[] {"Naive Uniform","Recursive","Depth-First", "Prim"});
-        panel.controlPanel().add(myCombo);
-        
-        panel.generateNewMaze(20, 20, 0.2f, GeneratorType.NAIVEUNIFORM, 1000l, 5, 2);
+        panel.thread.start();
+        //panel.generateNewMaze(l, h, density, GeneratorType.RECURSIVE, delayMs, lives, 2);
         
         
     }
