@@ -68,6 +68,7 @@ public class JPanelLaby extends JPanel implements Runnable { //Classe JPanel pou
     
     private boolean isAIEnabled = false;
     private boolean isAutoRestart = false;
+    private boolean disableAutoHide = false;
     
     private float density0 = 0.4f; //Densite defaut sauvegardee pour tout les generateurs
     private float density1 = 1f;
@@ -179,7 +180,7 @@ public class JPanelLaby extends JPanel implements Runnable { //Classe JPanel pou
         JLabel aiLabel = new JLabel("AI Type: ");
         aiLabel.setFont(new Font("Arial", Font.BOLD, 14));
         
-        JComboBox<String> aiCombo = new JComboBox(new String[] {"Naive Wall Follow","Wall + Memory","Greedy + Flood Fill","Depth-First", "Breadth-First"});
+        JComboBox<String> aiCombo = new JComboBox(new String[] {"Naive Wall Follow","Wall + Memory","Wall + Flood Fill + Memory","Greedy + Flood Fill + Memory","Depth-First", "Breadth-First"});
         
         switch (aiType) {
             case NAIVEWALL:
@@ -188,14 +189,17 @@ public class JPanelLaby extends JPanel implements Runnable { //Classe JPanel pou
             case MEMORYWALL:
                 aiCombo.setSelectedIndex(1);
                 break;
-            case GREEDYFILL:
+            case MEMORYFILLWALL:
                 aiCombo.setSelectedIndex(2);
                 break;
-            case DEPTHFIRST:
+            case GREEDYFILL:
                 aiCombo.setSelectedIndex(3);
                 break;
-            case BREADTHFIRST:
+            case DEPTHFIRST:
                 aiCombo.setSelectedIndex(4);
+                break;
+            case BREADTHFIRST:
+                aiCombo.setSelectedIndex(5);
                 break;
         }
         
@@ -205,23 +209,28 @@ public class JPanelLaby extends JPanel implements Runnable { //Classe JPanel pou
         
         JCheckBox enableAICheck = new JCheckBox("Enable AI");
         JCheckBox enableRestartCheck = new JCheckBox("Automatic Restart");
+        JCheckBox disableHideCheck = new JCheckBox("Disable Auto-Hide");
         
         upButton.addActionListener((ActionEvent e) -> {
             affichageLaby.labyrinthe().deplace('H');
+            affichageLaby.labyrinthe().purgeAI();
             repaint();
         });
         downButton.addActionListener((ActionEvent e) -> {
             affichageLaby.labyrinthe().deplace('B');
+            affichageLaby.labyrinthe().purgeAI();
             repaint();
         });
         
         leftButton.addActionListener((ActionEvent e) -> {
             affichageLaby.labyrinthe().deplace('G');
+            affichageLaby.labyrinthe().purgeAI();
             repaint();
         });
         
         rightButton.addActionListener((ActionEvent e) -> {
             affichageLaby.labyrinthe().deplace('D');
+            affichageLaby.labyrinthe().purgeAI();
             repaint();
         });
         visibleButton.addActionListener(new ActionListener() {
@@ -357,12 +366,15 @@ public class JPanelLaby extends JPanel implements Runnable { //Classe JPanel pou
                         aiType = AIType.MEMORYWALL;
                         break;
                     case 2:
-                        aiType = AIType.GREEDYFILL;
+                        aiType = AIType.MEMORYFILLWALL;
                         break;
                     case 3:
-                        aiType = AIType.DEPTHFIRST;
+                        aiType = AIType.GREEDYFILL;
                         break;
                     case 4:
+                        aiType = AIType.DEPTHFIRST;
+                        break;
+                    case 5:
                         aiType = AIType.BREADTHFIRST;
                         break;
                 }
@@ -385,19 +397,30 @@ public class JPanelLaby extends JPanel implements Runnable { //Classe JPanel pou
         enableRestartCheck.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if(e.getStateChange() == ItemEvent.SELECTED) { //checkbox has been selected
+                if(e.getStateChange() == ItemEvent.SELECTED) {
                     isAutoRestart = true;
                     affichageLaby.labyrinthe().enableRestart();
-                } else { //checkbox has been deselected
+                } else {
                     isAutoRestart = false;
                     affichageLaby.labyrinthe().disableRestart();
+                };
+            }
+        });
+        
+        disableHideCheck.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if(e.getStateChange() == ItemEvent.SELECTED) {
+                    disableAutoHide = true;
+                } else {
+                    disableAutoHide = false;
                 };
             }
         });
                         
         //Ajouter tout les controles sur un GridBagLayout
         JPanel cpanel = controlPanel;
-        cpanel.setPreferredSize(new Dimension(300, 0));
+        cpanel.setPreferredSize(new Dimension(220, 0));
         cpanel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.ipadx = 0;
@@ -504,6 +527,11 @@ public class JPanelLaby extends JPanel implements Runnable { //Classe JPanel pou
         c.gridx = 0;
         c.gridy = 21;
         cpanel.add(enableRestartCheck, c);
+        c.insets = new Insets(20, 0, 0, 0);
+        c.gridwidth = 3;
+        c.gridx = 0;
+        c.gridy = 22;
+        cpanel.add(disableHideCheck, c);
         //movementButtons.add(myCombo);
         
     }
@@ -595,7 +623,7 @@ public class JPanelLaby extends JPanel implements Runnable { //Classe JPanel pou
             System.out.println("Height cannot be bigger than 500!");
             h = 500;
         }
-        affichageLaby.setLabyrinthe(new Labyrinthe(w, h, this, density, type, delayms, lives, waitms, doGenAnim, aiType, aiMovementDelay, aiAnimationDelay, isAIEnabled, isAutoRestart));
+        affichageLaby.setLabyrinthe(new Labyrinthe(w, h, this, density, type, delayms, lives, waitms, doGenAnim, aiType, aiMovementDelay, aiAnimationDelay, isAIEnabled, isAutoRestart, disableAutoHide));
         affichageLaby.labyrinthe().generate();
         generateMazeNext = false;
     }

@@ -24,7 +24,10 @@ public class AITurn implements AI {
     private int posNeg;
     private int[][] visited;
     
+    private boolean[][] fillingBoard;
+    
     private boolean useMemory;
+    private boolean useFill;
     
     public AITurn() {
         direction = Helper.randomRange(0, 3);
@@ -36,6 +39,10 @@ public class AITurn implements AI {
     public AITurn(boolean b) { //Si le AI utilise la memoire
         this();
         useMemory = b;
+    }
+    public AITurn(boolean b, boolean f) { //Si le AI utilise du floodFill
+        this(b);
+        useFill = f;
     }
     
     
@@ -50,13 +57,21 @@ public class AITurn implements AI {
                 }
             }
         }
+        int exitX = (sortie.isHorz) ? sortie.x : sortie.x-1;
+        int exitY = (sortie.isHorz) ? sortie.y-1 : sortie.y;
+        
         if (leftRight == 0) {
-            if (canMove(direction, x, y, w, h, murs)) {
+            boolean canMoveByFill = true;
+            if (useFill) {
+                fillingBoard = Helper.getFloodFillRelative(x, y, direction, w, h, murs);
+                canMoveByFill = fillingBoard[exitX][exitY];
+            }
+            if (canMove(direction, x, y, w, h, murs) && (canMoveByFill)) {
                 visited[x][y] = direction;
                 return directionToChar(direction);
             } else {
-                boolean canMoveRight = canMove((direction+1+4)%4, x, y, w, h, murs);
-                boolean canMoveLeft = canMove((direction-1+4)%4, x, y, w, h, murs);
+                boolean canMoveRight = canMove((direction+1+4)%4, x, y, w, h, murs) && (!useFill || Helper.getFloodFillRelative(x, y, (direction+1+4)%4, w, h, murs)[exitX][exitY]);
+                boolean canMoveLeft = canMove((direction-1+4)%4, x, y, w, h, murs) && (!useFill || Helper.getFloodFillRelative(x, y, (direction-1+4)%4, w, h, murs)[exitX][exitY]);
                 if (canMoveRight && !canMoveLeft) {
                     direction = (direction + 1 + 4) % 4;
                     leftRight = -1;
@@ -81,8 +96,14 @@ public class AITurn implements AI {
         
         int count = 0;
         int newDirection = (direction + leftRight + 4)%4;
+        boolean[][] tempFill = null;
         while (true) {
-            boolean canMove = canMove(newDirection, x, y, w, h, murs);
+            boolean canMoveByFill = true;
+            if (useFill) {
+                tempFill = Helper.getFloodFillRelative(x, y, newDirection, w, h, murs);
+                canMoveByFill = tempFill[exitX][exitY];
+            }
+            boolean canMove = canMove(newDirection, x, y, w, h, murs) && (count>4 || canMoveByFill);
             if (canMove && (!useMemory || visited[x][y] != newDirection || count > 4)) {
                 //direction = newDirection;
                 break;
@@ -90,7 +111,10 @@ public class AITurn implements AI {
             newDirection = (newDirection + posNeg + 4)%4;
             count++;
         }
-    
+        if (useFill) {
+            fillingBoard = tempFill;
+        }
+        
         visited[x][y] = newDirection;
         direction = newDirection;
         return directionToChar(newDirection);
@@ -101,6 +125,18 @@ public class AITurn implements AI {
     public void paint(Graphics2D g2, double sqSize) {
         if (visited == null || g2 == null) {
             return;
+        }
+        if (useFill) {
+            if (fillingBoard != null) {
+                g2.setColor(new Color(20, 90, 120));
+                for (int x=0; x<visited.length; x++) {
+                    for (int y=0; y<visited[0].length; y++) {
+                        if(fillingBoard[x][y]) {
+                            g2.fillRect((int)((x+1)*sqSize), (int)((y+1)*sqSize), (int)sqSize, (int)sqSize);
+                        }
+                    }
+                }
+            }
         }
         g2.setStroke(new BasicStroke(2));
         g2.setColor(Color.CYAN);

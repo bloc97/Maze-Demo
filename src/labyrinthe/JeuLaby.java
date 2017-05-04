@@ -32,7 +32,7 @@ public class JeuLaby {
         float density = 0.3f;
         int l = 12;
         int h = 12;
-        long delayms = 10000l;
+        long delayms = 3000l;
         int lives = 5;
         
         if (args.length > 2) {
