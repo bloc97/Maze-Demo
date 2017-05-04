@@ -15,11 +15,27 @@ import javax.swing.JComponent;
 public interface AI {
     //Enums for AI types
     public enum AIType {
-        NAIVEWALL, GREEDYFILL, DEADENDFILL, DEPTHFIRST, BREADTHFIRST, DIJKSTRA, ASTAR, 
+        NAIVEWALL, MEMORYWALL, MEMORYFILLWALL, GREEDYFILL, DEPTHFIRST, BREADTHFIRST //Types de AI
+        //TODO: Dead end fill, General DIJKSTRA, A*
     }
     
-    public static AI getNewAI(AIType type) {
-        return new AIDepthFirst();
+    public static AI getNewAI(AIType type) { //Cree le AI avec le AIType
+        switch (type) {
+            case NAIVEWALL:
+                return new AITurn();
+            case MEMORYWALL:
+                return new AITurn(true);
+            case MEMORYFILLWALL:
+                return new AITurn(true, true);
+            case GREEDYFILL:
+                return new AIGreedyFloodFill();
+            case DEPTHFIRST:
+                return new AIDepthFirst();
+            case BREADTHFIRST:
+                return new AIBreadthFirst();
+            default :
+                return new AITurn();
+        }
     }
     
     public char getNextDirection(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage, int animWait);

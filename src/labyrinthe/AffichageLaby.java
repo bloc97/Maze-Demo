@@ -130,10 +130,14 @@ public class AffichageLaby extends JComponent {
             }
         }
         //Paint le texte
-        if (laby.isGenerating()) {
+        if (laby.isGeneratingWalls()) {
             g2.setColor(Color.RED);
             g2.setFont(new Font("Courier", Font.BOLD, (int)(sqSize/1.5f)));
             g2.drawString("Please Wait...", (int)sqSize, (int)sqSize*(laby.h()+1.8f));
+        } else if (laby.isGenerating()) {
+            g2.setColor(Color.GREEN);
+            g2.setFont(new Font("Courier", Font.BOLD, (int)(sqSize/4f)));
+            g2.drawString("Remember the Maze, you have "+ laby.getShowTimeDelaySeconds() + " Seconds.", (int)sqSize, (int)sqSize*(laby.h()+1.8f));
         }
         
         

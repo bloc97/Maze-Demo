@@ -44,15 +44,18 @@ public class Labyrinthe {
     private int[] lastStartingState;
     
     private boolean isGenerating = true;
+    private boolean finishedWallsGeneration = false;
     private boolean isAIenabled;
     private boolean automaticRestart;
     
     private boolean hasGameEnded = false;
     
+    private boolean disableHide;
+    
     //private Timer aiTimer;
 
     //Constructor with 5 params: Lenght,height,density, time and number of lives
-    public Labyrinthe(int w, int h, JPanelLaby affichage, float density, GeneratorType type, long delayms, int lives, int waitms, boolean doAnim, AIType aiType, int aiDelay, int aiAnimDelay, boolean isAIenabled, boolean automaticRestart) {
+    public Labyrinthe(int w, int h, JPanelLaby affichage, float density, GeneratorType type, long delayms, int lives, int waitms, boolean doAnim, AIType aiType, int aiDelay, int aiAnimDelay, boolean isAIenabled, boolean automaticRestart, boolean disableHide) {
         this.l = w;
         this.h = h;
         this.affichage = affichage;
@@ -67,11 +70,13 @@ public class Labyrinthe {
         this.aiAnimDelay = aiAnimDelay;
         this.isAIenabled = isAIenabled;
         this.automaticRestart = automaticRestart;
+        this.disableHide = disableHide;
     }
     //Function to generate maze
     public void generate() {
         System.out.println("Initialising Maze...");
         isGenerating = true;
+        finishedWallsGeneration = false;
         ai = null;
         murs = new ListeMuret();
         int[] pos;
@@ -106,13 +111,14 @@ public class Labyrinthe {
         ai = AI.getNewAI(aiType);
         
         
-        if (isAIenabled) {
+        if (isAIenabled || disableHide) {
             isGenerating = false;
         } else {
             startHideTimer();
         }
         
         affichage.repaint();
+        finishedWallsGeneration = true;
         hasGameEnded = false;
     }
     
@@ -122,6 +128,10 @@ public class Labyrinthe {
         }
         this.ai = null;
         ai = AI.getNewAI(aiType);
+    }
+    
+    public int getShowTimeDelaySeconds() {
+        return (int)delayms/1000;
     }
     
     public void purge() {
@@ -137,7 +147,7 @@ public class Labyrinthe {
         Timer hideTimer = new Timer((int)delayms, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (isAIenabled || hasGameEnded) {
+                if (isAIenabled || hasGameEnded || disableHide) {
                 } else {
                     murs.hide();
                 }
@@ -159,7 +169,7 @@ public class Labyrinthe {
             pers = new Personnage(lastStartingState[0], lastStartingState[1], lastStartingState[2]);
             ai = AI.getNewAI(aiType);
             murs.show();
-            if (isAIenabled) {
+            if (isAIenabled || disableHide) {
             } else {
                 startHideTimer();
             }
@@ -174,6 +184,12 @@ public class Labyrinthe {
     }
     public void disableRestart() {
         automaticRestart = false;
+    }
+    public void disableAutoHide() {
+        disableHide = true;
+    }
+    public void enableAutoHide() {
+        disableHide = false;
     }
     public void showWalls() {
         if (isGenerating) {
@@ -220,6 +236,9 @@ public class Labyrinthe {
     //Getters for width and height
     public boolean isGenerating() {
         return isGenerating;
+    }
+    public boolean isGeneratingWalls() {
+        return !finishedWallsGeneration;
     }
     public int w() {
         return l;
