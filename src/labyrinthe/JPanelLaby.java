@@ -211,27 +211,39 @@ public class JPanelLaby extends JPanel implements Runnable { //Classe JPanel pou
         JCheckBox enableRestartCheck = new JCheckBox("Automatic Restart");
         JCheckBox disableHideCheck = new JCheckBox("Disable Auto-Hide");
         
-        upButton.addActionListener((ActionEvent e) -> {
-            affichageLaby.labyrinthe().deplace('H');
-            affichageLaby.labyrinthe().purgeAI();
-            repaint();
+        upButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                affichageLaby.labyrinthe().deplace('H');
+                affichageLaby.labyrinthe().purgeAI();
+                repaint();
+            }
         });
-        downButton.addActionListener((ActionEvent e) -> {
-            affichageLaby.labyrinthe().deplace('B');
-            affichageLaby.labyrinthe().purgeAI();
-            repaint();
+        downButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                affichageLaby.labyrinthe().deplace('B');
+                affichageLaby.labyrinthe().purgeAI();
+                repaint();
+            }
         });
         
-        leftButton.addActionListener((ActionEvent e) -> {
-            affichageLaby.labyrinthe().deplace('G');
-            affichageLaby.labyrinthe().purgeAI();
-            repaint();
+        leftButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                affichageLaby.labyrinthe().deplace('G');
+                affichageLaby.labyrinthe().purgeAI();
+                repaint();
+            }
         });
         
-        rightButton.addActionListener((ActionEvent e) -> {
-            affichageLaby.labyrinthe().deplace('D');
-            affichageLaby.labyrinthe().purgeAI();
-            repaint();
+        rightButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                affichageLaby.labyrinthe().deplace('D');
+                affichageLaby.labyrinthe().purgeAI();
+                repaint();
+            }
         });
         visibleButton.addActionListener(new ActionListener() {
             @Override
