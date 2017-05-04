@@ -16,7 +16,7 @@ public class JFrameLaby extends JFrame {
 
     //Constuct the frame using a certain x and y size
     public JFrameLaby(int xsize, int ysize) {
-        this.setTitle("Labyrinthe");
+        this.setTitle("Maze");
         this.setSize(xsize, ysize);
         
         this.setVisible(true);

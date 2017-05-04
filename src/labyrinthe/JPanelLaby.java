@@ -128,10 +128,10 @@ public class JPanelLaby extends JPanel implements Runnable {
     //Method to add button
     private void addControls() {
         
-        JButton upButton = new JButton("^"); 
-        JButton downButton = new JButton("v"); 
-        JButton leftButton = new JButton("<"); 
-        JButton rightButton = new JButton(">"); 
+        JButton upButton = new JButton("^ (W)"); 
+        JButton downButton = new JButton("v (S)"); 
+        JButton leftButton = new JButton("< (A)"); 
+        JButton rightButton = new JButton("> (D)"); 
         JButton visibleButton = new JButton("Visible");
         JButton invisibleButton = new JButton("Invisible");
         JButton resetButton = new JButton("Reset");
@@ -187,29 +187,23 @@ public class JPanelLaby extends JPanel implements Runnable {
         JLabel aiLabel = new JLabel("AI Type: ");
         aiLabel.setFont(new Font("Arial", Font.BOLD, 14));
         
-        JComboBox<String> aiCombo = new JComboBox(new String[] {"Naive Wall Follow","Wall + Pledge","Wall + Memory","Wall + Memory + Pledge","Greedy + Flood Fill","Depth-First", "Breadth-First"});
+        JComboBox<String> aiCombo = new JComboBox(new String[] {"Naive Wall Follow","Wall + Memory","Greedy + Flood Fill","Depth-First", "Breadth-First"});
         
         switch (aiType) {
             case NAIVEWALL:
                 aiCombo.setSelectedIndex(0);
                 break;
-            case PLEDGEWALL:
+            case MEMORYWALL:
                 aiCombo.setSelectedIndex(1);
                 break;
-            case MEMORYWALL:
+            case GREEDYFILL:
                 aiCombo.setSelectedIndex(2);
                 break;
-            case PMWALL:
+            case DEPTHFIRST:
                 aiCombo.setSelectedIndex(3);
                 break;
-            case GREEDYFILL:
-                aiCombo.setSelectedIndex(4);
-                break;
-            case DEPTHFIRST:
-                aiCombo.setSelectedIndex(5);
-                break;
             case BREADTHFIRST:
-                aiCombo.setSelectedIndex(6);
+                aiCombo.setSelectedIndex(4);
                 break;
         }
         
@@ -368,24 +362,19 @@ public class JPanelLaby extends JPanel implements Runnable {
                         aiType = AIType.NAIVEWALL;
                         break;
                     case 1:
-                        aiType = AIType.PLEDGEWALL;
-                        break;
-                    case 2:
                         aiType = AIType.MEMORYWALL;
                         break;
-                    case 3:
-                        aiType = AIType.PMWALL;
-                        break;
-                    case 4:
+                    case 2:
                         aiType = AIType.GREEDYFILL;
                         break;
-                    case 5:
+                    case 3:
                         aiType = AIType.DEPTHFIRST;
                         break;
-                    case 6:
+                    case 4:
                         aiType = AIType.BREADTHFIRST;
                         break;
                 }
+                affichageLaby.labyrinthe().setAIType(aiType);
             }
         });
         enableAICheck.addItemListener(new ItemListener() {

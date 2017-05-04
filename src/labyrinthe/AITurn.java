@@ -36,9 +36,6 @@ public class AITurn implements AI {
     private int[][] visited;
     
     private boolean useMemory;
-    private boolean usePledge;
-    
-    private int pledgeAngle = 0;
     
     public AITurn() {
         direction = Helper.randomRange(0, 3);
@@ -51,64 +48,7 @@ public class AITurn implements AI {
         this();
         useMemory = b;
     }
-    public AITurn(boolean b, boolean p) {
-        this(b);
-        usePledge = p;
-    }
     
-    private int getTurnAngle(int initialDirection, int laterDirection) {
-        initialDirection = (initialDirection + 4)%4;
-        laterDirection = (laterDirection + 4)%4;
-        if (initialDirection == 0) {
-            if (laterDirection == 3) {
-                return -1;
-            }
-            if (laterDirection == 1) {
-                return 1;
-            }
-            if (laterDirection == 2) {
-                return posNeg * 2;
-            }
-            return 0;
-        } else if (initialDirection == 1) {
-            if (laterDirection == 0) {
-                return -1;
-            }
-            if (laterDirection == 2) {
-                return 1;
-            }
-            if (laterDirection == 3) {
-                return posNeg * 2;
-            }
-            return 0;
-            
-        } else if (initialDirection == 2) {
-            if (laterDirection == 1) {
-                return -1;
-            }
-            if (laterDirection == 3) {
-                return 1;
-            }
-            if (laterDirection == 0) {
-                return posNeg * 2;
-            }
-            return 0;
-            
-        } else if (initialDirection == 3) {
-            if (laterDirection == 2) {
-                return -1;
-            }
-            if (laterDirection == 4) {
-                return 1;
-            }
-            if (laterDirection == 1) {
-                return posNeg * 2;
-            }
-            return 0;
-        }
-        return 0;
-        
-    }
     
     @Override
     public char getNextDirection(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage, int animWait) {
@@ -160,12 +100,6 @@ public class AITurn implements AI {
             }
             newDirection = (newDirection + posNeg + 4)%4;
             count++;
-        }
-        
-        pledgeAngle += getTurnAngle(direction, newDirection);
-        
-        if (usePledge && pledgeAngle == 0) {
-            leftRight = 0;
         }
     
         visited[x][y] = newDirection;

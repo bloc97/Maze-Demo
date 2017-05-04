@@ -34,8 +34,6 @@ public class JeuLaby {
         int lives = 5;
         
         
-        
-
         int width = gd.getDisplayMode().getWidth();
         int height = gd.getDisplayMode().getHeight();
         int defaultW = width*9/10;

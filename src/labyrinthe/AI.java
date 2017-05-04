@@ -14,7 +14,7 @@ import javax.swing.JComponent;
  */
 public interface AI {
     public enum AIType {
-        NAIVEWALL, MEMORYWALL, PLEDGEWALL, PMWALL, GREEDYFILL, DEPTHFIRST, BREADTHFIRST
+        NAIVEWALL, MEMORYWALL, GREEDYFILL, DEPTHFIRST, BREADTHFIRST
         //DEAD end Fill, DIJKSTRA, ASTAR
     }
     
@@ -24,10 +24,6 @@ public interface AI {
                 return new AITurn();
             case MEMORYWALL:
                 return new AITurn(true);
-            case PLEDGEWALL:
-                return new AITurn(false, true);
-            case PMWALL:
-                return new AITurn(true, true);
             case GREEDYFILL:
                 return new AIGreedyFloodFill();
             case DEPTHFIRST:
