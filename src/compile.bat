@@ -1,2 +1,0 @@
-"C:\Program Files\Java\jdk1.8.0_131\bin\javac.exe" AffichageLaby.java AI.java AIBreadthFirst.java AIDepthFirst.java AIGreedyFloodFill.java AITurn.java Helper.java IteratorMuret.java JeuLaby.java JFrameLaby.java JPanelLaby.java Labyrinthe.java ListeMuret.java Muret.java NoeudMuret.java Personnage.java RandomGenerators.java
-pause

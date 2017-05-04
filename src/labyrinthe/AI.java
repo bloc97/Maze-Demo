@@ -14,7 +14,7 @@ import javax.swing.JComponent;
  */
 public interface AI { //Interface AI pour tout les types de AI
     public enum AIType {
-        NAIVEWALL, MEMORYWALL, MEMORYFILLWALL, GREEDYFILL, DEPTHFIRST, BREADTHFIRST //Types de AI
+        NAIVEWALL, MEMORYWALL, MEMORYFILLWALL, GREEDYFILL, DEPTHFIRST, BREADTHFIRST, ASTAR //Types de AI
         //TODO: Dead end fill, General DIJKSTRA, A*
     }
     
@@ -32,6 +32,8 @@ public interface AI { //Interface AI pour tout les types de AI
                 return new AIDepthFirst();
             case BREADTHFIRST:
                 return new AIBreadthFirst();
+            case ASTAR:
+                return new AIBreadthFirst(true);
             default :
                 return new AITurn();
         }

@@ -77,7 +77,6 @@ public class JPanelLaby extends JPanel implements Runnable { //Classe JPanel pou
     
     private boolean generateMazeNext = true;
     
-
     //Constructor
     public JPanelLaby(int xsize, int ysize, int w, int h, float density, GeneratorType type, long delayms, int lives, int waitms, AIType aiType) {
         this.xsize = xsize;
@@ -93,7 +92,6 @@ public class JPanelLaby extends JPanel implements Runnable { //Classe JPanel pou
         this.waitms = waitms;
         this.aiType = aiType;
         
-        
         setSize(xsize, ysize);
         //Set the layout
         this.setLayout(new BorderLayout(0, 0));
@@ -106,8 +104,6 @@ public class JPanelLaby extends JPanel implements Runnable { //Classe JPanel pou
         //Add buttons and event listeners
         addControls();
         addEventListeners();
-        
-        
     }
     
     public JPanel controlPanel() {
@@ -145,12 +141,14 @@ public class JPanelLaby extends JPanel implements Runnable { //Classe JPanel pou
         densitySlider.setMinorTickSpacing(50);
         densitySlider.setPaintTicks(true);
         densitySlider.setPaintLabels(true);
+        
         Hashtable labelTable = new Hashtable();
         labelTable.put(0, new JLabel("0.0") );
         labelTable.put(250, new JLabel("0.25") );
         labelTable.put(500, new JLabel("0.5") );
         labelTable.put(750, new JLabel("0.75") );
         labelTable.put(1000, new JLabel("1.0") );
+        
         densitySlider.setLabelTable(labelTable);
         
         JSlider genSpeedSlider = new JSlider(0, 50, (waitms>50) ? 0 : 50-waitms);
@@ -180,7 +178,7 @@ public class JPanelLaby extends JPanel implements Runnable { //Classe JPanel pou
         JLabel aiLabel = new JLabel("AI Type: ");
         aiLabel.setFont(new Font("Arial", Font.BOLD, 14));
         
-        JComboBox<String> aiCombo = new JComboBox(new String[] {"Naive Wall Follow","Wall + Memory","Wall + Flood Fill + Memory","Greedy + Flood Fill + Memory","Depth-First", "Breadth-First"});
+        JComboBox<String> aiCombo = new JComboBox(new String[] {"Naive Wall Follow","Wall + Memory","Wall + Flood Fill + Memory","Greedy + Flood Fill + Memory","Depth-First","Breadth-First","A*"});
         
         switch (aiType) {
             case NAIVEWALL:
@@ -201,8 +199,10 @@ public class JPanelLaby extends JPanel implements Runnable { //Classe JPanel pou
             case BREADTHFIRST:
                 aiCombo.setSelectedIndex(5);
                 break;
+            case ASTAR:
+                aiCombo.setSelectedIndex(6);
+                break;
         }
-        
         
         JSlider aiSpeedSlider = new JSlider(0, 1000, (aiMovementDelay>1000) ? 0 : 1000-aiMovementDelay);
         JSlider aiAnimSlider = new JSlider(0, 100, (aiAnimationDelay>100) ? 0 : 100-aiAnimationDelay);
@@ -388,6 +388,9 @@ public class JPanelLaby extends JPanel implements Runnable { //Classe JPanel pou
                         break;
                     case 5:
                         aiType = AIType.BREADTHFIRST;
+                        break;
+                    case 6:
+                        aiType = AIType.ASTAR;
                         break;
                 }
                 affichageLaby.labyrinthe().setAIType(aiType);

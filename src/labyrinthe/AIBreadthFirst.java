@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import static java.lang.Thread.sleep;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,16 +33,32 @@ public class AIBreadthFirst implements AI { //Breadth-First AI Implementation
     
     private boolean foundPath = false;
     
+    private boolean useHeuristic;
+    
     public AIBreadthFirst() {
+        useHeuristic = false;
     }
     
+    public AIBreadthFirst(boolean h) {
+        useHeuristic = h;
+    }
+    
+    private class DirectionPoint {
+        public Point point;
+        public LinkedList<Integer> directions;
+
+        public DirectionPoint(Point point, LinkedList<Integer> directions) {
+            this.point = point;
+            this.directions = directions;
+        }
+        
+    }
     
     public void getPath(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage, int animWait) {
         
         visited = new boolean[w][h];
         examined = new boolean[w][h];
-        LinkedList<Point> queue = new LinkedList<>();
-        LinkedList<LinkedList<Integer>> pathQueue = new LinkedList<>();
+        LinkedList<DirectionPoint> queue = new LinkedList<>();
         directionPath = new LinkedList<>();
         
         winX = (sortie.isHorz) ? sortie.x : sortie.x-1;
@@ -50,12 +67,25 @@ public class AIBreadthFirst implements AI { //Breadth-First AI Implementation
         Point startPoint = new Point(x, y);
         LinkedList<Integer> startPath = new LinkedList<>();
         
-        pathQueue.addFirst(startPath);
-        queue.addFirst(startPoint);
+        queue.addFirst(new DirectionPoint(startPoint, startPath));
         
         while (queue.size() > 0) {
-            Point currentPoint = queue.removeLast();
-            LinkedList<Integer> currentPath = pathQueue.removeLast();
+            DirectionPoint currentDP = queue.getLast();
+            double minScore = Double.MAX_VALUE;
+            
+            if (useHeuristic) {
+                for (DirectionPoint dp : queue) {
+                    double thisScore = Helper.distanceScore(dp.point.x, dp.point.y, sortie);
+                    if (thisScore < minScore) {
+                        currentDP = dp;
+                        minScore = thisScore;
+                    }
+                }
+            }
+            
+            queue.remove(currentDP);
+            Point currentPoint = currentDP.point;
+            LinkedList<Integer> currentPath = currentDP.directions;
             x = currentPoint.x;
             y = currentPoint.y;
             
@@ -67,19 +97,19 @@ public class AIBreadthFirst implements AI { //Breadth-First AI Implementation
             }
             
             if (x == winX && y == winY) {
+                System.out.println("return");
                 directionPath = currentPath;
                 foundPath = true;
                 return;
             } else {
-                
+                System.out.println("else");
                 for (int i=0; i<4; i++) {
                     if (!isVisited(x, y, i, visited) && canMove(i, x, y, w, h, murs)) {
                         Point newPoint = Helper.getPointFromDirection(x, y, i);
                         visited[newPoint.x][newPoint.y] = true;
                         LinkedList<Integer> newPath = (LinkedList<Integer>)currentPath.clone();
                         newPath.add(i);
-                        pathQueue.addFirst(newPath);
-                        queue.addFirst(newPoint);
+                        queue.addFirst(new DirectionPoint(newPoint, newPath));
                     }
                 }
                 visited[x][y] = true;
@@ -90,6 +120,7 @@ public class AIBreadthFirst implements AI { //Breadth-First AI Implementation
             
             
         }
+        System.out.println("ERROREOF");
         
     } //Trouver le path (Avec animation)
     
@@ -122,6 +153,12 @@ public class AIBreadthFirst implements AI { //Breadth-First AI Implementation
                 }
             }
         }
+        if (directionPath == null) {
+            return;
+        }
+        if (directionPath.size() <= 0) {
+            return;
+        }
         g2.setColor(Color.CYAN);
         int ix = x;
         int iy = y;
@@ -141,7 +178,8 @@ public class AIBreadthFirst implements AI { //Breadth-First AI Implementation
                         break;
             }
         }
-            
+        
+        
         for (int d : directionPath) {
             switch(d) {
                     case 0:
