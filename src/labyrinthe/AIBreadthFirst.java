@@ -97,12 +97,10 @@ public class AIBreadthFirst implements AI { //Breadth-First AI Implementation
             }
             
             if (x == winX && y == winY) {
-                System.out.println("return");
                 directionPath = currentPath;
                 foundPath = true;
                 return;
             } else {
-                System.out.println("else");
                 for (int i=0; i<4; i++) {
                     if (!isVisited(x, y, i, visited) && canMove(i, x, y, w, h, murs)) {
                         Point newPoint = Helper.getPointFromDirection(x, y, i);
@@ -120,7 +118,6 @@ public class AIBreadthFirst implements AI { //Breadth-First AI Implementation
             
             
         }
-        System.out.println("ERROREOF");
         
     } //Trouver le path (Avec animation)
     
