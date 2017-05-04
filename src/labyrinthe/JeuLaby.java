@@ -35,13 +35,13 @@ public class JeuLaby {
         long delayms = 3000l;
         int lives = 5;
         
-        if (args.length > 2) {
+        if (args.length >= 2) {
             h = Integer.parseInt(args[0]);
             l = Integer.parseInt(args[1]);
         }
         if (args.length == 5) {
             density = Float.parseFloat(args[2]);
-            delayms = Long.parseLong(args[3]);
+            delayms = Long.parseLong(args[3])*1000;
             lives = Integer.parseInt(args[4]);
         }
         

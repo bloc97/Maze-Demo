@@ -307,6 +307,7 @@ public class Labyrinthe {
         }
         
         if (pers.vies() < 0) {
+            showWalls();
             hasGameEnded = true;
             if (automaticRestart) {
                 reset();
@@ -328,6 +329,7 @@ public class Labyrinthe {
         }
         
         if (pers.x() == winX && pers.y() == winY) {
+            showWalls();
             hasGameEnded = true;
             if (automaticRestart) {
                 affichage.queueGenerateNewMaze();
