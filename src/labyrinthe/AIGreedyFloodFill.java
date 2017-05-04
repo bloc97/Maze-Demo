@@ -13,11 +13,8 @@ import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
-import static java.lang.Thread.sleep;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JComponent;
 import static labyrinthe.Helper.canDeplace;
 import static labyrinthe.Helper.canMove;
@@ -33,12 +30,14 @@ public class AIGreedyFloodFill implements AI {
     private int direction; //0N, 1E, 2S, 3W
     private int[][] visited;
     
+    private Point fillingPoint;
     private boolean[][] fillingBoard;
-    
+
+    //Greedy AI 's flood fill
     public AIGreedyFloodFill() {
         direction = Helper.randomRange(1, 2);
     }
-    public static boolean getCorner(int d, int d2, int x, int y, int w, int h, ListeMuret murs) { //Trouver si il y a une jonction
+    public static boolean getCorner(int d, int d2, int x, int y, int w, int h, ListeMuret murs) {
         
         if ((d == 0 && d2 == 3) || (d == 3 && d2 == 0)) {
             return topLeft(x, y, w, h, murs);
@@ -52,6 +51,7 @@ public class AIGreedyFloodFill implements AI {
         return getCorner((d+4)%4, (d2+4)%4, x, y, w, h, murs);
         
     }
+    // junctions check
     public static boolean topLeft(int x, int y, int w, int h, ListeMuret murs) { //checks for topleft junction
         if (x-1 < 0 || y-1 < 0) {
             return true;
@@ -70,7 +70,7 @@ public class AIGreedyFloodFill implements AI {
         }
         return false;
     }
-    public static boolean bottomLeft(int x, int y, int w, int h, ListeMuret murs) { //etc
+    public static boolean bottomLeft(int x, int y, int w, int h, ListeMuret murs) {
         if (x-1 < 0 || y+1 > h) {
             return true;
         }
@@ -88,14 +88,16 @@ public class AIGreedyFloodFill implements AI {
         }
         return false;
     }
-    
-    
+
+    //Score to calculate the distance
     private static double distanceScore(int x, int y, Muret sortie) {
         //return Math.abs(sortie.x-x) + Math.abs(sortie.y - y);
         return (sortie.x-x)*(sortie.x-x) + (sortie.y-y)*(sortie.y-y);
         //return Math.sqrt((sortie.x-x)*(sortie.x-x) + (sortie.y-y)*(sortie.y-y));
     }
-    private static double distanceScore(int d, int x, int y, Muret sortie) { //score a minimiser
+
+    //Score to calculate the distance
+    private static double distanceScore(int d, int x, int y, Muret sortie) {
         switch (d) {
             case 0:
                 return distanceScore(x, y-1, sortie);
@@ -110,7 +112,7 @@ public class AIGreedyFloodFill implements AI {
         }
     }
 
-    @Override
+    //returns the keycode for next direction
     public char getNextDirection(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage, int animWait) {
         
         if (visited == null) {
@@ -132,17 +134,8 @@ public class AIGreedyFloodFill implements AI {
         boolean canMoveRight = canMove(direction+1, x, y, w, h, murs);
         
         if (canMoveForward && !canMoveLeft && !canMoveRight) {
-            fillingBoard = getFloodFillRelative(x, y, direction, w, h, murs);
-            
-            try {
-                affichage.repaint();
-                sleep(animWait);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-            if (fillingBoard[exitX][exitY]) {
-                visited[x][y] = direction; //Helps prevent walking back and forth in the same location
+            if (getFloodFillRelative(x, y, direction, w, h, murs)[exitX][exitY]) {
+                visited[x][y] = direction; //Prevent walking back and forth in the same location
                 return directionToChar(direction);
             }
         }
@@ -154,9 +147,7 @@ public class AIGreedyFloodFill implements AI {
         for (int i=0; i<4; i++) {
             if (canMove(i, x, y, w, h, murs)) {
                 double newScore = distanceScore(i, x, y, sortie);
-                boolean[][] tempFillingBoard = getFloodFillRelative(x, y, i, w, h, murs);
-                if (tempFillingBoard[exitX][exitY]) {
-                    fillingBoard = tempFillingBoard;
+                if (getFloodFillRelative(x, y, i, w, h, murs)[exitX][exitY]) {
                     if (newScore < minScore && visited[x][y] != i) {
                         minScore = newScore;
                         optimalSolutions.add(i);
@@ -164,15 +155,7 @@ public class AIGreedyFloodFill implements AI {
                         otherSolutions.add(i);
                     }
                 }
-                
             }
-        }
-        
-        try {
-            affichage.repaint();
-            sleep(animWait);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(RandomGenerators.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         if (optimalSolutions.size() > 0) {
@@ -191,25 +174,13 @@ public class AIGreedyFloodFill implements AI {
         
     }
 
-    @Override
+    //Paint method
     public void paint(Graphics2D g2, double sqSize) {
         if (visited == null || g2 == null) {
             return;
         }
-        
-        g2.setColor(new Color(20, 90, 120));
-        g2.setStroke(new BasicStroke(2));
-        if (fillingBoard != null) {
-            for (int x=0; x<visited.length; x++) {
-                for (int y=0; y<visited[0].length; y++) {
-                    if(fillingBoard[x][y]) {
-                        g2.fillRect((int)((x+1)*sqSize), (int)((y+1)*sqSize), (int)sqSize, (int)sqSize);
-                        //g2.draw(createArrow(new Point((int)((x+1+0.5f)*sqSize), (int)((y+1+0.8f)*sqSize)), new Point((int)((x+1+0.5f)*sqSize), (int)((y+1+0.2f)*sqSize))));
-                    }
-                }
-            }
-        }
         g2.setColor(Color.CYAN);
+        g2.setStroke(new BasicStroke(2));
         for (int x=0; x<visited.length; x++) {
             for (int y=0; y<visited[0].length; y++) {
                 /*

@@ -12,7 +12,8 @@ import javax.swing.JComponent;
  *
  * @author Bowen Peng, Zhenglong, Devoir 2
  */
-public interface AI { //Interface AI pour tout les types de AI
+public interface AI {
+    //Enums for AI types
     public enum AIType {
         NAIVEWALL, MEMORYWALL, MEMORYFILLWALL, GREEDYFILL, DEPTHFIRST, BREADTHFIRST //Types de AI
         //TODO: Dead end fill, General DIJKSTRA, A*
@@ -37,6 +38,6 @@ public interface AI { //Interface AI pour tout les types de AI
         }
     }
     
-    public char getNextDirection(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage, int animWait); //Retourner le prochain movement (si il y a un path trouve)
-    public void paint(Graphics2D g2, double sqSize); //Paint pour le AI, display l'information
+    public char getNextDirection(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage, int animWait);
+    public void paint(Graphics2D g2, double sqSize);
 }

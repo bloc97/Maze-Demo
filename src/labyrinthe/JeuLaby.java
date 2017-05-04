@@ -21,11 +21,26 @@ public class JeuLaby {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        // TODO code application logic here
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        /*DisplayMode[] dms = gd.getDisplayModes();
+        for (DisplayMode mode : dms) {
+            System.out.println(mode.getWidth() + " x " + mode.getHeight() + " " + mode.getBitDepth() + "b @" + mode.getRefreshRate());
+        }*/
+
+        //Init parameters
+        float density = 0.5f;
+        int l = 20;
+        int h = 20;
+        long delayms = 1000l;
+        int lives = 5;
         
-        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice(); //Trouver la taille de l'ecran
+        
+        
+
         int width = gd.getDisplayMode().getWidth();
         int height = gd.getDisplayMode().getHeight();
-        int defaultW = width*9/10; //Afficher un window un peu plus petit
+        int defaultW = width*9/10;
         int defaultH = height*9/10;
         
         //Valeurs defaut
@@ -49,11 +64,9 @@ public class JeuLaby {
         JFrameLaby frame = new JFrameLaby(defaultW, defaultH);
         JPanelLaby panel = new JPanelLaby(defaultW, defaultH, l, h, density, GeneratorType.NAIVEUNIFORM, delayms, lives, 10, AIType.GREEDYFILL);
         frame.add(panel);
-        
         panel.setFocusable(true);
-        
         panel.thread.start();
-        
+        //panel.generateNewMaze(l, h, density, GeneratorType.RECURSIVE, delayMs, lives, 2);
         
         
     }
