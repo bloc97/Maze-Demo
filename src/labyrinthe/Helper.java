@@ -12,7 +12,7 @@ import java.awt.geom.AffineTransform;
 
 /**
  *
- * @author bowen
+ * @author Bowen Peng, Zhenglong, Devoir 2
  */
 //Helper class
 public abstract class Helper { //Helper class

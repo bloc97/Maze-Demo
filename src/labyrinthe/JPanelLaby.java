@@ -41,7 +41,7 @@ import labyrinthe.RandomGenerators.GeneratorType;
 
 /**
  *
- * @author bowen
+ * @author Bowen Peng, Zhenglong, Devoir 2
  */
 //Redefine the JPanel for maze
 public class JPanelLaby extends JPanel implements Runnable { //Classe JPanel pour le jeu

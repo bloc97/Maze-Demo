@@ -13,7 +13,7 @@ import labyrinthe.RandomGenerators.GeneratorType;
 
 /**
  *
- * @author bowen
+ * @author Bowen Peng, Zhenglong, Devoir 2
  */
 public class JeuLaby {
 

@@ -21,7 +21,7 @@ import static labyrinthe.Helper.isVisited;
 
 /**
  *
- * @author bowen
+ * @author Bowen Peng, Zhenglong, Devoir 2
  */
 public class AIBreadthFirst implements AI { //Breadth-First AI Implementation
     private boolean[][] visited;

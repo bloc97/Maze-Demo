@@ -9,7 +9,7 @@ import java.util.LinkedList;
 
 /**
  *
- * @author bowen
+ * @author Bowen Peng, Zhenglong, Devoir 2
  */
 //Wall nodes
 public class NoeudMuret {

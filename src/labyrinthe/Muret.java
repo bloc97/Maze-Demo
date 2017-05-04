@@ -7,7 +7,7 @@ package labyrinthe;
 
 /**
  *
- * @author bowen
+ * @author Bowen Peng, Zhenglong, Devoir 2
  */
 public class Muret {
     final public int x, y;

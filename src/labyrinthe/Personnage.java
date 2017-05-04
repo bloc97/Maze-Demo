@@ -15,7 +15,7 @@ import java.util.LinkedList;
 
 /**
  *
- * @author bowen
+ * @author Bowen Peng, Zhenglong, Devoir 2
  */
 public class Personnage {
     //Attributes

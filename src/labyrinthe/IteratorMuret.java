@@ -9,7 +9,7 @@ import java.util.Iterator;
 
 /**
  *
- * @author bowen
+ * @author Bowen Peng, Zhenglong, Devoir 2
  */
 //Iterator to parse through all of the nodes
 public class IteratorMuret implements Iterator<Muret> { //Iterateur pour Muret

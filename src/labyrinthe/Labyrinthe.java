@@ -16,7 +16,7 @@ import static labyrinthe.RandomGenerators.GeneratorType.NAIVEUNIFORM;
 
 /**
  *
- * @author bowen
+ * @author Bowen Peng, Zhenglong, Devoir 2
  */
 public class Labyrinthe {
     private int l, h;

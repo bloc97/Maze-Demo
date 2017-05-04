@@ -10,7 +10,7 @@ import java.util.Iterator;
 
 /**
  *
- * @author bowen
+ * @author Bowen Peng, Zhenglong, Devoir 2
  */
 public class ListeMuret implements Iterable<Muret> {
     //First node attribute

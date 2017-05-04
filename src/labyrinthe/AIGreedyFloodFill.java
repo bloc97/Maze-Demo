@@ -27,7 +27,7 @@ import static labyrinthe.Helper.getFloodFillRelative;
 
 /**
  *
- * @author bowen
+ * @author Bowen Peng, Zhenglong, Devoir 2
  */
 public class AIGreedyFloodFill implements AI {
     private int direction; //0N, 1E, 2S, 3W

@@ -21,7 +21,7 @@ import static labyrinthe.Helper.createLos;
 
 /**
  *
- * @author bowen
+ * @author Bowen Peng, Zhenglong, Devoir 2
  */
 
 //Afficher le labyrinthe

@@ -10,7 +10,7 @@ import javax.swing.JComponent;
 
 /**
  *
- * @author bowen
+ * @author Bowen Peng, Zhenglong, Devoir 2
  */
 public interface AI { //Interface AI pour tout les types de AI
     public enum AIType {

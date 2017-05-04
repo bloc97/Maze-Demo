@@ -23,7 +23,7 @@ import static labyrinthe.Helper.isVisited;
 
 /**
  *
- * @author bowen
+ * @author Bowen Peng, Zhenglong, Devoir 2
  */
 public class AIDepthFirst implements AI {
     private boolean[][] visited;

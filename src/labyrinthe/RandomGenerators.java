@@ -23,7 +23,7 @@ import static labyrinthe.Helper.randomRange;
 
 /**
  *
- * @author bowen
+ * @author Bowen Peng, Zhenglong, Devoir 2
  */
 public abstract class RandomGenerators {
     //Rng for walls

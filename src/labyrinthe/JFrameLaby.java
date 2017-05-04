@@ -9,7 +9,7 @@ import javax.swing.JFrame;
 
 /**
  *
- * @author bowen
+ * @author Bowen Peng, Zhenglong, Devoir 2
  */
 //Redefine the Jframe for maze
 public class JFrameLaby extends JFrame {

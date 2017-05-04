@@ -16,7 +16,7 @@ import static labyrinthe.Helper.directionToChar;
 
 /**
  *
- * @author bowen
+ * @author Bowen Peng, Zhenglong, Devoir 2
  */
 public class AITurn implements AI {
     private int direction; //0N, 1E, 2S, 3W
