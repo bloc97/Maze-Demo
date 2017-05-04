@@ -10,7 +10,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import static java.lang.Thread.sleep;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,15 +17,13 @@ import javax.swing.JComponent;
 import static labyrinthe.Helper.canMove;
 import static labyrinthe.Helper.createArrow;
 import static labyrinthe.Helper.directionToChar;
-import static labyrinthe.Helper.getPointFromDirection;
-import static labyrinthe.Helper.hasUnvisited;
 import static labyrinthe.Helper.isVisited;
 
 /**
  *
  * @author bowen
  */
-public class AIBreadthFirst implements AI {
+public class AIBreadthFirst implements AI { //Breadth-First AI Implementation
     private boolean[][] visited;
     private boolean[][] examined;
     private LinkedList<Integer> directionPath;
@@ -94,7 +91,7 @@ public class AIBreadthFirst implements AI {
             
         }
         
-    }
+    } //Trouver le path (Avec animation)
     
     @Override
     public char getNextDirection(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage, int animWait) {

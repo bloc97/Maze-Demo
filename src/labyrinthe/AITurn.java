@@ -9,21 +9,10 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Polygon;
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
-import static java.lang.Thread.sleep;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JComponent;
-import static labyrinthe.Helper.canDeplace;
 import static labyrinthe.Helper.canMove;
 import static labyrinthe.Helper.createArrow;
 import static labyrinthe.Helper.directionToChar;
-import static labyrinthe.Helper.getFloodFillRelative;
 
 /**
  *
@@ -44,7 +33,7 @@ public class AITurn implements AI {
         //leftRight = (Math.random() < 0.5) ? 1 : -1;
         //posNeg = (leftRight == 1) ? -1 : 1;
     }
-    public AITurn(boolean b) {
+    public AITurn(boolean b) { //Si le AI utilise la memoire
         this();
         useMemory = b;
     }

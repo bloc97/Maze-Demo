@@ -15,7 +15,7 @@ import javax.swing.JFrame;
 public class JFrameLaby extends JFrame {
 
     //Constuct the frame using a certain x and y size
-    public JFrameLaby(int xsize, int ysize) {
+    public JFrameLaby(int xsize, int ysize) { //JFrame pour le 'jeu'
         this.setTitle("Maze");
         this.setSize(xsize, ysize);
         

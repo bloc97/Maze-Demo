@@ -15,7 +15,8 @@ import java.awt.geom.AffineTransform;
  * @author bowen
  */
 //Helper class
-public abstract class Helper {
+public abstract class Helper { //Helper class
+    //Classe helper avec des fonctions souvents utilisees
 
     //Print out the filled region
     public static void printFill(boolean[][] grid) {

@@ -38,7 +38,7 @@ public class AIGreedyFloodFill implements AI {
     public AIGreedyFloodFill() {
         direction = Helper.randomRange(1, 2);
     }
-    public static boolean getCorner(int d, int d2, int x, int y, int w, int h, ListeMuret murs) {
+    public static boolean getCorner(int d, int d2, int x, int y, int w, int h, ListeMuret murs) { //Trouver si il y a une jonction
         
         if ((d == 0 && d2 == 3) || (d == 3 && d2 == 0)) {
             return topLeft(x, y, w, h, murs);
@@ -70,7 +70,7 @@ public class AIGreedyFloodFill implements AI {
         }
         return false;
     }
-    public static boolean bottomLeft(int x, int y, int w, int h, ListeMuret murs) {
+    public static boolean bottomLeft(int x, int y, int w, int h, ListeMuret murs) { //etc
         if (x-1 < 0 || y+1 > h) {
             return true;
         }
@@ -95,7 +95,7 @@ public class AIGreedyFloodFill implements AI {
         return (sortie.x-x)*(sortie.x-x) + (sortie.y-y)*(sortie.y-y);
         //return Math.sqrt((sortie.x-x)*(sortie.x-x) + (sortie.y-y)*(sortie.y-y));
     }
-    private static double distanceScore(int d, int x, int y, Muret sortie) {
+    private static double distanceScore(int d, int x, int y, Muret sortie) { //score a minimiser
         switch (d) {
             case 0:
                 return distanceScore(x, y-1, sortie);
@@ -142,7 +142,7 @@ public class AIGreedyFloodFill implements AI {
             }
             
             if (fillingBoard[exitX][exitY]) {
-                visited[x][y] = direction; //Prevent walking back and forth in the same location
+                visited[x][y] = direction; //Helps prevent walking back and forth in the same location
                 return directionToChar(direction);
             }
         }
