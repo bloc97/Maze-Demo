@@ -26,6 +26,7 @@ import static labyrinthe.Helper.isVisited;
  * @author bowen
  */
 public class AIDepthFirst implements AI {
+    //Attributes
     private boolean[][] visited;
     private LinkedList<Integer> directionPath;
     
@@ -34,9 +35,9 @@ public class AIDepthFirst implements AI {
     public AIDepthFirst() {
     }
     
-    
+    //get path
     public void getPath(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage, int animWait) {
-        
+
         visited = new boolean[w][h];
         LinkedList<Point> stack = new LinkedList<>();
         directionPath = new LinkedList<>();

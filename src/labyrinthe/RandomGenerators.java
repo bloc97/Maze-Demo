@@ -31,7 +31,8 @@ public abstract class RandomGenerators {
     public enum GeneratorType {
         NAIVEUNIFORM, RECURSIVE, DEPTHFIRST, PRIM;
     }
-    
+
+    //Generate uniformly walls
     public static void uniformGenerateWalls(int w, int h, float density, ListeMuret liste, JComponent affichage, int waitms, boolean doAnim) { //Naive uniform generation
         System.out.println("Generating World...");
         
@@ -75,7 +76,7 @@ public abstract class RandomGenerators {
         System.out.println("Done.");
         
     }
-    
+    //Generate wall using recursion depending on a certain starting point
     public static void recursiveGenerateWalls(int w, int h, float density, ListeMuret liste, JComponent affichage, int waitms, boolean doAnim) { //Recursive generation, separate the maze in two recursively until the separation is smaller than 1.
         System.out.println("Generating World...");
         
@@ -94,6 +95,7 @@ public abstract class RandomGenerators {
         System.out.println("Done.");
         
     }
+
     private static void rGenW(int x0, int y0, int x1, int y1, float density, ListeMuret liste, JComponent affichage, int waitms, boolean doAnim) {
         
         if (x1-x0 <= 1 || y1-y0 <= 1) {

@@ -36,6 +36,7 @@ public class AIFloodFill implements AI {
         return getCorner((d+4)%4, (d2+4)%4, x, y, w, h, murs);
         
     }
+
     public boolean topLeft(int x, int y, int w, int h, ListeMuret murs) { //checks for topleft junction
         if (x-1 < 0 || y-1 < 0) {
             return true;
@@ -72,7 +73,7 @@ public class AIFloodFill implements AI {
         }
         return false;
     }
-    
+    //Check if player can move
     public boolean canMove(int d, int x, int y, int w, int h, ListeMuret murs) {
         switch (d) {
             case 0:
@@ -89,7 +90,7 @@ public class AIFloodFill implements AI {
     }
     
 
-    @Override
+    //Method to get the next direction keycode
     public char getNextDirection(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage, int animWait) {
         //System.out.println(canMoveTop + " " + canMoveRight + " " + canMoveBottom + " " + canMoveLeft);
         //System.out.println(canMove(0, x, y, w, h, murs) + " " + canMove(1, x, y, w, h, murs) + " " + canMove(2, x, y, w, h, murs) + " " + canMove(3, x, y, w, h, murs));
@@ -153,7 +154,7 @@ public class AIFloodFill implements AI {
         
     }
 
-    @Override
+    //Paint method
     public void paint(Graphics2D g2, double sqSize) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

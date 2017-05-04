@@ -32,7 +32,8 @@ public class AIGreedyFloodFill implements AI {
     
     private Point fillingPoint;
     private boolean[][] fillingBoard;
-    
+
+    //Greedy AI 's flood fill
     public AIGreedyFloodFill() {
         direction = Helper.randomRange(1, 2);
     }
@@ -50,6 +51,7 @@ public class AIGreedyFloodFill implements AI {
         return getCorner((d+4)%4, (d2+4)%4, x, y, w, h, murs);
         
     }
+    // junctions check
     public static boolean topLeft(int x, int y, int w, int h, ListeMuret murs) { //checks for topleft junction
         if (x-1 < 0 || y-1 < 0) {
             return true;
@@ -86,13 +88,15 @@ public class AIGreedyFloodFill implements AI {
         }
         return false;
     }
-    
-    
+
+    //Score to calculate the distance
     private static double distanceScore(int x, int y, Muret sortie) {
         //return Math.abs(sortie.x-x) + Math.abs(sortie.y - y);
         return (sortie.x-x)*(sortie.x-x) + (sortie.y-y)*(sortie.y-y);
         //return Math.sqrt((sortie.x-x)*(sortie.x-x) + (sortie.y-y)*(sortie.y-y));
     }
+
+    //Score to calculate the distance
     private static double distanceScore(int d, int x, int y, Muret sortie) {
         switch (d) {
             case 0:
@@ -108,7 +112,7 @@ public class AIGreedyFloodFill implements AI {
         }
     }
 
-    @Override
+    //returns the keycode for next direction
     public char getNextDirection(int x, int y, int w, int h, ListeMuret murs, Muret sortie, JComponent affichage, int animWait) {
         
         if (visited == null) {
@@ -170,7 +174,7 @@ public class AIGreedyFloodFill implements AI {
         
     }
 
-    @Override
+    //Paint method
     public void paint(Graphics2D g2, double sqSize) {
         if (visited == null || g2 == null) {
             return;

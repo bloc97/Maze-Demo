@@ -13,6 +13,7 @@ import javax.swing.JComponent;
  * @author bowen
  */
 public interface AI {
+    //Enums for AI types
     public enum AIType {
         NAIVEWALL, GREEDYFILL, DEADENDFILL, DEPTHFIRST, BREADTHFIRST, DIJKSTRA, ASTAR, 
     }

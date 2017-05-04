@@ -27,6 +27,8 @@ public class JeuLaby {
         for (DisplayMode mode : dms) {
             System.out.println(mode.getWidth() + " x " + mode.getHeight() + " " + mode.getBitDepth() + "b @" + mode.getRefreshRate());
         }*/
+
+        //Init parameters
         float density = 0.5f;
         int l = 20;
         int h = 20;
