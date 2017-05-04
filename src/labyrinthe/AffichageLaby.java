@@ -72,23 +72,20 @@ public class AffichageLaby extends JComponent {
         
         double sqSize = Math.min(w/(laby.w()+2), h/(laby.h()+2));
         
-        //Color lastColor = g2.getColor();
-        //g2.drawRect(0, 0, (int)sqSize*(laby.w()+2), (int)sqSize*(laby.h()+2));
-        
         g2.setColor(new Color(20,12,20));
         g2.fillRect(0, 0, (int)sqSize*(laby.w()+2), (int)sqSize*(laby.h()+2));
         
-        //g2.setColor(new Color(84,115,108));
-        //g2.fillRect((int)sqSize*(1), (int)sqSize*(1), (int)sqSize*(laby.w()), (int)sqSize*(laby.h()));
-        
-        //g2.setColor(lastColor);
         
         if (laby.murs() == null) {
             return;
         }
-        
-        //Stroke lastStroke = g2.getStroke();
-        
+        //Paint les informations du AI
+        if (laby.ai() != null) {
+            if (laby.isAIenabled()) {
+                laby.ai().paint(g2, sqSize);
+            }
+        }
+        //Paint les murs
         float wallWidth = (float)sqSize/10;
         float wallShadowWidth = wallWidth*1.5f;
         if (wallShadowWidth >= 0.5) {
@@ -132,7 +129,7 @@ public class AffichageLaby extends JComponent {
                 //g2.drawLine(x0, y0, x1, y1);
             }
         }
-        
+        //Paint le texte
         if (laby.isGenerating()) {
             g2.setColor(Color.RED);
             g2.setFont(new Font("Courier", Font.BOLD, (int)(sqSize/1.5f)));
@@ -143,18 +140,18 @@ public class AffichageLaby extends JComponent {
         if (laby.personnage() == null || laby.sortie() == null) {
             return;
         }
-        //g2.setStroke(lastStroke);
+        //Paint le personnage et ses vies
         laby.personnage().dessine(g2, sqSize);
         g2.setColor(Color.yellow);
-        for (int i=0; i<laby.personnage().vies(); i++) {
-            g2.fill(createLos(new Point((int)((i+1.2f)*sqSize), (int)((0.5)*sqSize)), new Point((int)((i+2.2f)*sqSize), (int)((0.5)*sqSize))));
+        if (laby.isAIenabled()) {
+            g2.setFont(new Font("Courier", Font.BOLD, (int)(sqSize/1.5f)));
+            g2.drawString("AI ENABLED", (int)sqSize, (int)sqSize*(0.8f));
+        } else {
+            for (int i=0; i<laby.personnage().vies(); i++) {
+                g2.fill(createLos(new Point((int)((i+1.2f)*sqSize), (int)((0.5)*sqSize)), new Point((int)((i+2.2f)*sqSize), (int)((0.5)*sqSize))));
+            }
         }
-        //g2.drawString("Vies: " + laby.personnage().vies(), 20, 20);
         
-        if (laby.ai() == null) {
-            return;
-        }
-        laby.ai().paint(g2, sqSize);
         
         
     };

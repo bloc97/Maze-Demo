@@ -22,13 +22,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import static java.lang.Thread.sleep;
-import java.text.NumberFormat;
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.BoundedRangeModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -38,10 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.MouseInputAdapter;
-import javax.swing.event.MouseInputListener;
 import javax.swing.text.NumberFormatter;
 import labyrinthe.AI.AIType;
 import labyrinthe.RandomGenerators.GeneratorType;
@@ -51,7 +44,7 @@ import labyrinthe.RandomGenerators.GeneratorType;
  * @author bowen
  */
 //Redefine the JPanel for maze
-public class JPanelLaby extends JPanel implements Runnable {
+public class JPanelLaby extends JPanel implements Runnable { //Classe JPanel pour le jeu
 
     //Attributes
     private int xsize, ysize;
@@ -76,12 +69,13 @@ public class JPanelLaby extends JPanel implements Runnable {
     private boolean isAIEnabled = false;
     private boolean isAutoRestart = false;
     
-    private float density0 = 0.4f;
+    private float density0 = 0.4f; //Densite defaut sauvegardee pour tout les generateurs
     private float density1 = 1f;
     private float density2 = 1f;
     private float density3 = 1f;
     
     private boolean generateMazeNext = true;
+    
 
     //Constructor
     public JPanelLaby(int xsize, int ysize, int w, int h, float density, GeneratorType type, long delayms, int lives, int waitms, AIType aiType) {
@@ -123,13 +117,13 @@ public class JPanelLaby extends JPanel implements Runnable {
     }
     
     
-    //Method to add button
+    //Ajouter les controles et le menu
     private void addControls() {
         
-        JButton upButton = new JButton("^"); 
-        JButton downButton = new JButton("v"); 
-        JButton leftButton = new JButton("<"); 
-        JButton rightButton = new JButton(">"); 
+        JButton upButton = new JButton("^ (W)"); 
+        JButton downButton = new JButton("v (S)"); 
+        JButton leftButton = new JButton("< (A)"); 
+        JButton rightButton = new JButton("> (D)"); 
         JButton visibleButton = new JButton("Visible");
         JButton invisibleButton = new JButton("Invisible");
         JButton resetButton = new JButton("Reset");
@@ -185,8 +179,26 @@ public class JPanelLaby extends JPanel implements Runnable {
         JLabel aiLabel = new JLabel("AI Type: ");
         aiLabel.setFont(new Font("Arial", Font.BOLD, 14));
         
-        JComboBox<String> aiCombo = new JComboBox(new String[] {"Naive Wall Follow","Greedy + Flood Fill","Depth-First", "Etc"});
-        aiCombo.setSelectedIndex(1);
+        JComboBox<String> aiCombo = new JComboBox(new String[] {"Naive Wall Follow","Wall + Memory","Greedy + Flood Fill","Depth-First", "Breadth-First"});
+        
+        switch (aiType) {
+            case NAIVEWALL:
+                aiCombo.setSelectedIndex(0);
+                break;
+            case MEMORYWALL:
+                aiCombo.setSelectedIndex(1);
+                break;
+            case GREEDYFILL:
+                aiCombo.setSelectedIndex(2);
+                break;
+            case DEPTHFIRST:
+                aiCombo.setSelectedIndex(3);
+                break;
+            case BREADTHFIRST:
+                aiCombo.setSelectedIndex(4);
+                break;
+        }
+        
         
         JSlider aiSpeedSlider = new JSlider(0, 1000, (aiMovementDelay>1000) ? 0 : 1000-aiMovementDelay);
         JSlider aiAnimSlider = new JSlider(0, 100, (aiAnimationDelay>100) ? 0 : 100-aiAnimationDelay);
@@ -276,7 +288,7 @@ public class JPanelLaby extends JPanel implements Runnable {
             @Override
             public void stateChanged(ChangeEvent e) {
                 aiMovementDelay = 1000-aiSpeedSlider.getValue();
-                affichageLaby.labyrinthe().setAIDelay(aiMovementDelay);
+                
             }
         });
         aiAnimSlider.addChangeListener(new ChangeListener() {
@@ -333,13 +345,37 @@ public class JPanelLaby extends JPanel implements Runnable {
                 generateMazeNext = true;
             }
         });
+        
+        aiCombo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                switch (aiCombo.getSelectedIndex()) {
+                    case 0:
+                        aiType = AIType.NAIVEWALL;
+                        break;
+                    case 1:
+                        aiType = AIType.MEMORYWALL;
+                        break;
+                    case 2:
+                        aiType = AIType.GREEDYFILL;
+                        break;
+                    case 3:
+                        aiType = AIType.DEPTHFIRST;
+                        break;
+                    case 4:
+                        aiType = AIType.BREADTHFIRST;
+                        break;
+                }
+                affichageLaby.labyrinthe().setAIType(aiType);
+            }
+        });
         enableAICheck.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if(e.getStateChange() == ItemEvent.SELECTED) {//checkbox has been selected
+                if(e.getStateChange() == ItemEvent.SELECTED) { //checkbox has been selected
                     isAIEnabled = true;
                     affichageLaby.labyrinthe().enableAI();
-                } else {//checkbox has been deselected
+                } else { //checkbox has been deselected
                     isAIEnabled = false;
                     affichageLaby.labyrinthe().disableAI();
                 };
@@ -349,20 +385,19 @@ public class JPanelLaby extends JPanel implements Runnable {
         enableRestartCheck.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if(e.getStateChange() == ItemEvent.SELECTED) {//checkbox has been selected
+                if(e.getStateChange() == ItemEvent.SELECTED) { //checkbox has been selected
                     isAutoRestart = true;
                     affichageLaby.labyrinthe().enableRestart();
-                } else {//checkbox has been deselected
+                } else { //checkbox has been deselected
                     isAutoRestart = false;
                     affichageLaby.labyrinthe().disableRestart();
                 };
             }
         });
                         
-        
+        //Ajouter tout les controles sur un GridBagLayout
         JPanel cpanel = controlPanel;
         cpanel.setPreferredSize(new Dimension(300, 0));
-        GridBagLayout layout = new GridBagLayout();
         cpanel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.ipadx = 0;
@@ -473,7 +508,7 @@ public class JPanelLaby extends JPanel implements Runnable {
         
     }
 
-    //Events
+    //Event Listeners (Souris et clavier)
     private void addEventListeners() {
         
         this.addMouseListener(new MouseInputAdapter() {
@@ -523,9 +558,9 @@ public class JPanelLaby extends JPanel implements Runnable {
                         affichageLaby.labyrinthe().deplace('D');
                         affichageLaby.labyrinthe().purgeAI();
                         break;
-                    case ' ':
-                        affichageLaby.labyrinthe().stepAI();
-                        break;
+                    //case ' ':
+                        //affichageLaby.labyrinthe().stepAI();
+                        //break;
                 }
                 //System.out.println(e.getKeyChar());
                 repaint();
@@ -536,7 +571,7 @@ public class JPanelLaby extends JPanel implements Runnable {
             }
         });
     }
-    //Generate the maze
+    //Queue the maze generation
     public void queueGenerateNewMaze() {
         generateMazeNext = true;
     }
@@ -566,15 +601,20 @@ public class JPanelLaby extends JPanel implements Runnable {
     }
 
     @Override
-    public void run() { //Repaint each second to prevent grayscreen bug
+    public void run() { //Repaint each second to prevent grayscreen bug + uses threads to repaint the AI for animations
+        //Cannot repaint during an event, must use threads for animating the map and AI generation
         while (true) {
+            
             try {
                 updateUI();
                 repaint();
                 if (generateMazeNext) {
                     generateNewMaze();
                 }
-                sleep(500);
+                if (isAIEnabled) {
+                    affichageLaby.labyrinthe().stepAI();
+                }
+                sleep((aiMovementDelay < 10) ? 10 : aiMovementDelay);
             } catch (InterruptedException ex) {
                 Logger.getLogger(JPanelLaby.class.getName()).log(Level.SEVERE, null, ex);
             }
