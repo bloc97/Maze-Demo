@@ -15,7 +15,8 @@ import javax.swing.JComponent;
 public interface AI { //Interface AI pour tout les types de AI
     public enum AIType {
         NAIVEWALL, MEMORYWALL, MEMORYFILLWALL, GREEDYFILL, DEPTHFIRST, BREADTHFIRST, ASTAR //Types de AI
-        //TODO: Dead end fill, General DIJKSTRA, A*
+        //TODO: Dead end fill, General DIJKSTRA,
+        //TODO: Improved A*, fill when reaching wall, ignore places inaccessible
     }
     
     public static AI getNewAI(AIType type) { //Cree le AI avec le AIType

@@ -257,7 +257,11 @@ public abstract class Helper { //Helper class
         return (sortie.x - x) * (sortie.x - x) + (sortie.y - y) * (sortie.y - y);
         //return Math.sqrt((sortie.x-x)*(sortie.x-x) + (sortie.y-y)*(sortie.y-y));
     }
-
+    public static double distanceSqScore(int x, int y, Muret sortie) {
+        //return Math.abs(sortie.x-x) + Math.abs(sortie.y - y);
+        //return (sortie.x - x) * (sortie.x - x) + (sortie.y - y) * (sortie.y - y);
+        return Math.sqrt((sortie.x-x)*(sortie.x-x) + (sortie.y-y)*(sortie.y-y));
+    }
     public static double distanceScore(int d, int x, int y, Muret sortie) {
         //score a minimiser
         switch (d) {

@@ -74,8 +74,9 @@ public class AIBreadthFirst implements AI { //Breadth-First AI Implementation
             double minScore = Double.MAX_VALUE;
             
             if (useHeuristic) {
+                
                 for (DirectionPoint dp : queue) {
-                    double thisScore = Helper.distanceScore(dp.point.x, dp.point.y, sortie);
+                    double thisScore = Helper.distanceSqScore(dp.point.x, dp.point.y, sortie);
                     if (thisScore < minScore) {
                         currentDP = dp;
                         minScore = thisScore;
